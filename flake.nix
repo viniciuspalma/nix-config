@@ -26,7 +26,7 @@
   let
     username  = "vini";
     hostname  = "Viniciuss-MacBook-Pro"; 
-    system    = "x86_64-darwin";
+    system    = "aarch64-darwin";
     useremail = "pockvini@gmail.com";
 
     nixvimModule = nixvim.homeManagerModules.nixvim;

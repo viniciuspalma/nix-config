@@ -26,7 +26,44 @@
     which
     tree
 
-    _1password
-    _1password-gui
+    nodejs
+    go
+    kubectl
+    kubectx
+    (
+      google-cloud-sdk.withExtraComponents [
+	google-cloud-sdk.components.gke-gcloud-auth-plugin
+        google-cloud-sdk.components.cbt
+        google-cloud-sdk.components.bigtable
+      ]
+    )
+    telepresence2
+    direnv
+    fzf
+    tmux
+    k9s
+    ripgrep
+    ghz
+    pgcli
+    k6
+    ddosify
+    ffmpeg
+    gh
+    pre-commit
+    protoc-gen-go
+    delve
+    protobuf
+    python312
+    python311Packages.pip
+    freetype
+    giflib
+    libpng
+    boost
+    glew
+    glm
+    opam
+    copier
+    eslint_d
+    nodePackages_latest.prettier_d_slim
   ];
 }

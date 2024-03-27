@@ -3,9 +3,11 @@
 {
   # import sub modules
   imports = [
-    ./shell.nix
+    ./_1password.nix
     ./core.nix
     ./git.nix
+    ./kitty.nix
+    ./shell.nix
     ./starship.nix
     ./nvim
   ];

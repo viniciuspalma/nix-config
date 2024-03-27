@@ -31,6 +31,7 @@
       init.defaultBranch = "main";
       push.autoSetupRemote = true;
       pull.rebase = true;
+      url."git@github.com:goflink".insteadOf = "https://github.com/goflink";
     };
 
     # signing = {

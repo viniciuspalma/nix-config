@@ -1,5 +1,5 @@
 
-{ pkgs, lib, ... }:
+{ pkgs, lib, system, ... }:
 
 {
   # enable flakes globally
@@ -40,5 +40,5 @@
   system.stateVersion = 4;
 
   # The platform the configuration will be used on.
-  nixpkgs.hostPlatform = "x86_64-darwin";
+  nixpkgs.hostPlatform = system;
 }

@@ -169,6 +169,8 @@
     pkgs.zsh
   ];
 
+  environment.pathsToLink = ["/share/qemu"];
+
   # Set your time zone.
   # comment this due to the issue:
   #   https://github.com/LnL7/nix-darwin/issues/359
