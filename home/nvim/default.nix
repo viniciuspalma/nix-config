@@ -21,12 +21,14 @@
       undofile = true;
       updatetime = 50;
       colorcolumn = "100";
-      termguicolors = true;
       hlsearch = false;
       incsearch = true;
       backup = false;
       wrap = false;
     };
+
+    extraPlugins = [ pkgs.vimPlugins.gruvbox ];
+    colorscheme = "gruvbox";
   };
 
   home = {

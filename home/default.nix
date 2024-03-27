@@ -1,4 +1,4 @@
-{ username, useremail, ... }:
+{ username, ... }:
 
 {
   # import sub modules
