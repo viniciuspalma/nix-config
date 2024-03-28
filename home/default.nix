@@ -9,6 +9,7 @@
     ./kitty.nix
     ./shell.nix
     ./starship.nix
+    ./tmux.nix
     ./nvim
   ];
 

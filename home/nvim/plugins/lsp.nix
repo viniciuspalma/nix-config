@@ -29,6 +29,7 @@
 	  hls.enable      = true;
           marksman.enable = true;
           nil_ls.enable   = true;
+	  gopls.enable    = true;
 
           rust-analyzer = {
             enable = true;

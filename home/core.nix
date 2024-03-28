@@ -65,5 +65,9 @@
     copier
     eslint_d
     nodePackages_latest.prettier_d_slim
+
+    podman
+    podman-compose
+    qemu
   ];
 }
