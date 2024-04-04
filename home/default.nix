@@ -6,6 +6,7 @@
     ./_1password.nix
     ./core.nix
     ./git.nix
+    ./go.nix
     ./kitty.nix
     ./shell.nix
     ./starship.nix

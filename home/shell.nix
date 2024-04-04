@@ -9,8 +9,17 @@
 
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" ];
       theme = "cloud";
+      plugins =
+	[ "git"
+	  "golang"
+	  "kubectl"
+	  "helm"
+	  "gcloud"
+	  "docker"
+	  "kubectl"
+	  "direnv"
+	];
     };
   };
 

@@ -1,6 +1,7 @@
 {
   imports = [
 #   ./barbar.nix
+    ./cmp.nix
     ./comment.nix
 #   ./efm.nix
 #   ./floaterm.nix
@@ -33,6 +34,8 @@
 	enable = true;
 	userDefaultOptions.names = false;
       };
+      copilot-vim.enable = true;
+      luasnip.enable = true;
     };
   };
 }

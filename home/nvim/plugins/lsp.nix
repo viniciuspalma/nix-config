@@ -1,6 +1,9 @@
 {
   programs.nixvim = {
+
     plugins = {
+      typescript-tools.enable = true;
+
       lsp = {
         enable = true;
 
@@ -30,6 +33,7 @@
           marksman.enable = true;
           nil_ls.enable   = true;
 	  gopls.enable    = true;
+	  tsserver.enable = true;
 
           rust-analyzer = {
             enable = true;
