@@ -5,7 +5,7 @@
     enable = true;
 
     font = {
-      name = "Fira Code";
+      name = "FiraCode Nerd Font Mono";
       size = 16;
     };
 
