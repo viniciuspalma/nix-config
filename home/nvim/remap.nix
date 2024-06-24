@@ -19,7 +19,7 @@
         { mode = "n"; key = "<M-k>"; action = ":move-2<CR>"; }
         { mode = "n"; key = "<M-j>"; action = ":move+<CR>"; }
 
-	{ mode = "n"; key = "<leader>pv"; action = "vim.cmd.Ex"; lua = true; }
+	{ mode = "n"; key = "<leader>pv"; action = "vim.cmd.Ex"; }
 
 	{ mode = "n"; key = "J"; action = "mzJ`z"; }
 
@@ -35,18 +35,18 @@
 	#   require("vim-with-me").StopVimWithMe()
 	#end)
 	
-	{ mode = "x"; key = "<leader>p"; action = "[[\"_dP]]"; }
-	{ mode = "n"; key = "<leader>y"; action = "[[\"+y]]"; }
-	{ mode = "v"; key = "<leader>y"; action = "[[\"+y]]"; }
-	{ mode = "n"; key = "<leader>Y"; action = "[[\"+Y]]"; }
+	{ mode = "x"; key = "<leader>p"; action = "\"_dP"; }
+	{ mode = "n"; key = "<leader>y"; action = "\"+y"; }
+	{ mode = "v"; key = "<leader>y"; action = "\"+y"; }
+	{ mode = "n"; key = "<leader>Y"; action = "\"+Y"; }
 
-	{ mode = "n"; key = "<leader>d"; action = "[[\"d]]"; }
-	{ mode = "v"; key = "<leader>d"; action = "[[\"d]]"; }
+	{ mode = "n"; key = "<leader>d"; action = "\"d"; }
+	{ mode = "v"; key = "<leader>d"; action = "\"d"; }
 
 	{ mode = "n"; key = "<C-c>";     action = "<Esc>"; }
 	{ mode = "v"; key = "Q";         action = "<NOP>"; }
 	{ mode = "n"; key = "<C-f>";     action = "<cmd>silent !tmux neww tmux-sessionizer<CR>"; }
-	{ mode = "n"; key = "<leader>f"; action = "vim.lsp.buf.format"; lua = true; }
+	{ mode = "n"; key = "<leader>f"; action = "vim.lsp.buf.format"; }
 
 	{ mode = "n"; key = "<C-k>"; action = "<cmd>cnext<CR>zz"; }
 	{ mode = "n"; key = "<C-j>"; action = "<cmd>cprev<CR>zz"; }

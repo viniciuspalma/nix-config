@@ -17,9 +17,7 @@
         "<C-f>" = "live_grep";
       };
 
-      keymapsSilent = true;
-
-      defaults = {
+      settings.defaults = {
         file_ignore_patterns = [
           "^.git/"
           "^.mypy_cache/"

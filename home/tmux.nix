@@ -17,8 +17,6 @@
     # Overrides the hjkl and HJKL bindings for pane navigation and resizing in VI mode
     customPaneNavigationAndResize = true;
 
-    shortcut = " ";
-
     plugins = with pkgs.tmuxPlugins; [
       gruvbox
       sensible
@@ -29,9 +27,6 @@
     extraConfig = ''
       # Enable mouse
       set -g mouse on
-
-      # 2x C-a goes back and fourth between most recent windows
-      bind-key C-a last-window
 
       # For neovim
       set -g focus-events on
