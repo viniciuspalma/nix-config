@@ -51,6 +51,7 @@
       "google-chrome"
 	"1password"
 	"postman"
+	"wifiman"
 
 # IM & audio & remote desktop & meeting
 	"telegram"

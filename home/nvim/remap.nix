@@ -19,7 +19,7 @@
         { mode = "n"; key = "<M-k>"; action = ":move-2<CR>"; }
         { mode = "n"; key = "<M-j>"; action = ":move+<CR>"; }
 
-	{ mode = "n"; key = "<leader>pv"; action = "vim.cmd.Ex"; }
+	{ mode = "n"; key = "<leader>pv"; action = { __raw = "vim.cmd.Ex"; }; }
 
 	{ mode = "n"; key = "J"; action = "mzJ`z"; }
 
