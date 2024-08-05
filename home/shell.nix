@@ -1,4 +1,4 @@
-{...}: {
+{ lib,...}: {
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -9,7 +9,10 @@
 
     oh-my-zsh = {
       enable = true;
-      theme = "cloud";
+
+      custom = "$HOME/zsh-custom";
+      theme = "dracula-pro";
+
       plugins =
 	[ "git"
 	  "golang"

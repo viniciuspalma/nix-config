@@ -1,6 +1,7 @@
 {
   imports = [
 #   ./barbar.nix
+    ./catppuccin.nix
     ./cmp.nix
     ./comment.nix
 #   ./efm.nix
@@ -19,8 +20,6 @@
   ];
 
   programs.nixvim = {
-    colorschemes.gruvbox.enable = true;
-
     plugins = {
       gitsigns = {
         enable = true;

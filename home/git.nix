@@ -34,6 +34,14 @@
       url."git@github.com:goflink".insteadOf = "https://github.com/goflink";
     };
 
+    ignores = [
+      ".DS_Store"
+      ".idea"
+      ".vscode"
+      ".direnv"
+      ".envrc"
+    ];
+
     # signing = {
     #   key = "xxx";
     #   signByDefault = true;

@@ -37,6 +37,7 @@
         google-cloud-sdk.components.bigtable
       ]
     )
+    google-cloud-sql-proxy
     telepresence2
     direnv
     fzf
@@ -69,5 +70,7 @@
     podman
     podman-compose
     qemu
+    
+    caligula
   ];
 }

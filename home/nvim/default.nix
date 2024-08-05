@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{
   imports = [
     # ./autocommands.nix
     # ./completion.nix
@@ -26,9 +26,6 @@
       backup = false;
       wrap = false;
     };
-
-    extraPlugins = [ pkgs.vimPlugins.gruvbox ];
-    colorscheme = "gruvbox";
   };
 
   home = {

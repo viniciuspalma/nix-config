@@ -29,6 +29,10 @@
     # the Home Manager release notes for a list of state version
     # changes in each release.
     stateVersion = "23.11";
+
+    file."zsh-custom" = {
+      source = ./zsh-custom;
+    };
   };
 
   # Let Home Manager install and manage itself.
