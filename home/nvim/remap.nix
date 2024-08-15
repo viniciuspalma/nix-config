@@ -1,4 +1,4 @@
-{lib, ...}: {
+{
   programs.nixvim = {
     globals = {
       mapleader = " ";
@@ -45,7 +45,6 @@
 
 	{ mode = "n"; key = "<C-c>";     action = "<Esc>"; }
 	{ mode = "v"; key = "Q";         action = "<NOP>"; }
-	{ mode = "n"; key = "<C-f>";     action = "<cmd>silent !tmux neww tmux-sessionizer<CR>"; }
 	{ mode = "n"; key = "<leader>f"; action = "vim.lsp.buf.format"; }
 
 	{ mode = "n"; key = "<C-k>"; action = "<cmd>cnext<CR>zz"; }
