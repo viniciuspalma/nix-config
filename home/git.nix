@@ -40,6 +40,7 @@
       ".vscode"
       ".direnv"
       ".envrc"
+      "flake.lock"
     ];
 
     # signing = {

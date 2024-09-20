@@ -72,5 +72,7 @@
     qemu
     
     caligula
+    firebase-tools
+    teller
   ];
 }

@@ -15,13 +15,17 @@
             "<leader>j" = "goto_next";
           };
 
+
           lspBuf = {
             gd = "definition";
             gD = "references";
             gt = "type_definition";
             gi = "implementation";
             K = "hover";
-            "<F2>" = "rename";
+	    "<leader>vca" = "code_action";
+	    "<leader>vd" = "diagnostic.open_float";
+	    "<leader>vws" = "workspace_symbol";
+	    "<leader>vrn" = "rename";
           };
         };
 
@@ -29,11 +33,9 @@
           clangd.enable   = true;
           lua-ls.enable   = true;
           texlab.enable   = true;
-	  hls.enable      = true;
           marksman.enable = true;
-          nil-ls.enable   = true;
 	  gopls.enable    = true;
-	  tsserver.enable = true;
+	  volar.enable      = true;
 
           rust-analyzer = {
             enable = true;
