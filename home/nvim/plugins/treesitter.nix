@@ -6,7 +6,10 @@
       nixvimInjections = false;
 
       folding = false;
-      indent = true;
+
+      settings = {
+	indent.enable = true;
+      };
     };
 
     treesitter-refactor = {

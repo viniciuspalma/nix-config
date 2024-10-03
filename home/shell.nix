@@ -30,6 +30,10 @@
     USE_GKE_GCLOUD_AUTH_PLUGIN="True";
   };
 
+  home.sessionPath = [
+    "/Users/vini/.gem/ruby/3.3.0/bin"
+  ];
+
   home.shellAliases = {
     k = "kubectl";
 

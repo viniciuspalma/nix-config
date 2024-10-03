@@ -15,6 +15,6 @@
       update_check_interval = 0;
     };
 
-    theme = "Dracula";
+    themeFile = "Dracula";
   };
 }

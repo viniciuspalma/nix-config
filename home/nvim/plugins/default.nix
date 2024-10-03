@@ -20,7 +20,13 @@
   ];
 
   programs.nixvim = {
+    editorconfig = {
+      enable = true;
+    };
+
     plugins = {
+      web-devicons.enable = true; 
+
       gitsigns = {
         enable = true;
         settings.signs = {
