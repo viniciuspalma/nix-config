@@ -34,6 +34,7 @@
         gopls.enable    = true;
         volar.enable    = true;
         ts-ls.enable    = true;
+        eslint.enable   = true;
 
         rust-analyzer = {
           enable = true;

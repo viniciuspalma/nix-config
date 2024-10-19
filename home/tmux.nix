@@ -22,6 +22,7 @@
       sensible
       catppuccin
       yank 
+      kanagawa
     ];
 
     extraConfig = ''
@@ -53,16 +54,7 @@
       bind '"' split-window -c "#{pane_current_path}"
       bind % split-window -h -c "#{pane_current_path}"
 
-      # Set vi-mode
-      # bind-key -T copy-mode-vi v send-keys -X begin-selection
-      # bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
       bind-key -r f run-shell "tmux neww ~/.config/nix-darwin/scripts/tmux-sessionizer"
-
-      # set -g @plugin 'tmux-plugins/tpm'
-      # set -g @plugin 'tmux-plugins/tmux-sensible'
-      # set -g @plugin 'christoomey/vim-tmux-navigator'
-      # set -g @plugin 'dreamsofcode-io/catppuccin-tmux'
-      # set -g @plugin 'tmux-plugins/tmux-yank'
 
       run '~/.tmux/plugins/tpm/tpm'
     '';
