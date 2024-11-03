@@ -42,7 +42,7 @@
         userDefaultOptions.names = false;
       };
 
-      nvim-tree.enable
+      nvim-tree.enable = true;
 
       copilot-vim.enable = true;
       luasnip.enable = true;

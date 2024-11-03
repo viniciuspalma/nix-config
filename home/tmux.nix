@@ -22,7 +22,6 @@
       sensible
       catppuccin
       yank 
-      kanagawa
     ];
 
     extraConfig = ''
