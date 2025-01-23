@@ -1,72 +1,66 @@
 { pkgs, ...}: {
 
-##########################################################################
-# 
-#  Install all apps and packages here.
-#
-#  NOTE: Your can find all available options in:
-#    https://daiderd.com/nix-darwin/manual/index.html
-# 
-# TODO Fell free to modify this file to fit your needs.
-#
-##########################################################################
+  ##########################################################################
+  # 
+  #  Install all apps and packages here.
+  #
+  #  NOTE: Your can find all available options in:
+  #    https://daiderd.com/nix-darwin/manual/index.html
+  # 
+  # TODO Fell free to modify this file to fit your needs.
+  #
+  ##########################################################################
 
-# Install packages from nix's official package repository.
-#
-# The packages installed here are available to all users, and are reproducible across machines, and are rollbackable.
-# But on macOS, it's less stable than homebrew.
-#
-# Related Discussion: https://discourse.nixos.org/t/darwin-again/29331
+  # Install packages from nix's official package repository.
+  #
+  # The packages installed here are available to all users, and are reproducible across machines, and are rollbackable.
+  # But on macOS, it's less stable than homebrew.
+  #
+  # Related Discussion: https://discourse.nixos.org/t/darwin-again/29331
   environment.systemPackages = with pkgs; [
     git
-      coreutils-full
-      findutils
+    coreutils-full
+    findutils
   ];
 
   homebrew = {
     enable = true;
 
     onActivation = {
-      autoUpdate = false;
-# 'zap': uninstalls all formulae(and related files) not listed here.
+      autoUpdate = true;
+      # 'zap': uninstalls all formulae(and related files) not listed here.
       cleanup = "zap";
     };
 
     taps = [
-      "homebrew/cask-fonts"
-	"homebrew/services"
-	"homebrew/cask-versions"
-	"cfergeau/crc"
+      "homebrew/services"
+      "cfergeau/crc"
     ];
 
-# `brew install`
-# TODO Feel free to add your favorite apps here.
+    # `brew install`
+    # TODO Feel free to add your favorite apps here.
     brews = [
       "vfkit"
+      "sui"
     ];
 
-# `brew install --cask`
-# TODO Feel free to add your favorite apps here.
+    # `brew install --cask`
+    # TODO Feel free to add your favorite apps here.
     casks = [
-        "ollama"
-        "google-chrome"
-	"1password"
-	"postman"
-	"wifiman"
+      "ollama"
+      "google-chrome"
+      "1password"
+      "wifiman"
 
-# IM & audio & remote desktop & meeting
-	"telegram"
-	"discord"
+      # IM & audio & remote desktop & meeting
+      "telegram"
+      "discord"
 
-	"anki"
-	"iina" # video player
-	"raycast" # (HotKey: alt/option + space)search, caculate and run scripts(with many plugins)
-	"stats" # beautiful system monitor
+      "raycast" # (HotKey: alt/option + space)search, caculate and run scripts(with many plugins)
+      "stats" # beautiful system monitor
 
-# Development
-	"insomnia" # REST client
-	"wireshark" # network analyzer
-	"epic-games" # Unreal Engine
+      # Development
+      "android-studio" # Android development
     ];
   };
-	      }
+}

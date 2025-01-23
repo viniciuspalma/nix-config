@@ -3,6 +3,7 @@ _: {
     enable = true;
     goPrivate = [
       "github.com/goflink/**"
+      "github.com/code-visionaries/**"
     ];
   };
 }

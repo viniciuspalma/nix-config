@@ -1,4 +1,4 @@
-{ lib,...}: {
+{ lib,config,...}: {
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -14,24 +14,26 @@
       theme = "dracula-pro";
 
       plugins =
-	[ "git"
-	  "golang"
-	  "kubectl"
-	  "helm"
-	  "gcloud"
-	  "docker"
-	  "kubectl"
-	  "direnv"
-	];
+        [ "git"
+          "golang"
+          "kubectl"
+          "helm"
+          "gcloud"
+          "docker"
+          "kubectl"
+          "direnv"
+        ];
     };
   };
 
   home.sessionVariables = {
     USE_GKE_GCLOUD_AUTH_PLUGIN="True";
+    ANDROID_HOME="${config.home.homeDirectory}/Library/Android/sdk";
   };
 
   home.sessionPath = [
     "/Users/vini/.gem/ruby/3.3.0/bin"
+    "/opt/homebrew/bin"
   ];
 
   home.shellAliases = {

@@ -22,7 +22,6 @@
     nmap # A utility for network discovery and security auditing
     htop # An interactive process viewer for Unix
     ffmpeg # A complete, cross-platform solution to record, convert and stream audio and video
-    tmux # A terminal multiplexer
     glm # OpenGL Mathematics (GLM)
     giflib # A library for reading and writing gif images
     libpng # A collection of routines used to create PNG format graphics files
@@ -69,6 +68,8 @@
     pgcli
     firebase-tools
     teller
+    supabase-cli
+    gotrue-supabase
 
     # testing
     ddosify

@@ -12,6 +12,7 @@
     ./starship.nix
     ./tmux.nix
     ./nvim
+    ./zed.nix
   ];
 
   # Home Manager needs a bit of information about you and the

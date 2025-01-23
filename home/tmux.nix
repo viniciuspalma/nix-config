@@ -3,6 +3,8 @@
   programs.tmux = {
     enable = true;
 
+    prefix = "C-space";
+
     # Rather than constraining window size to the maximum size of any client
     # connected to the *session*, constrain window size to the maximum size of any
     # client connected to *that window*. Much more reasonable.
@@ -24,6 +26,8 @@
       yank 
     ];
 
+    terminal = "screen-256color";
+
     extraConfig = ''
       # Enable mouse
       set -g mouse on
@@ -34,20 +38,17 @@
       # Update the status line every seconds
       set -g status-interval 1
 
+      set -g default-command ${pkgs.zsh}/bin/zsh
+
       # auto window rename
       set -g automatic-rename
       set -g automatic-rename-format '#{pane_current_command}'
-
-      set -g default-terminal "xterm-256color"
-
-      set -g prefix C-space
-      unbind-key C-b
-      bind-key C-space send-prefix
 
       # Start windows and panes at 1, not 0
       set -g base-index 1
       set -g pane-base-index 1
       set-window-option -g pane-base-index 1
+
       # Set new panes to open in current directory
       bind c new-window -c "#{pane_current_path}"
       bind '"' split-window -c "#{pane_current_path}"
