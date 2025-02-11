@@ -70,6 +70,7 @@
     teller
     supabase-cli
     gotrue-supabase
+    terramate
 
     # testing
     ddosify
