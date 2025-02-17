@@ -12,6 +12,18 @@ let
     };
     meta.homepage = "https://github.com/tzakian/tree-sitter-move";
   };
+
+  treesitter-prisma = pkgs.tree-sitter.buildGrammar {
+    language = "prisma";
+    version = "v1.5.1";
+    src = pkgs.fetchFromGitHub {
+      owner = "victorhqc";
+      repo = "tree-sitter-prisma";
+      rev = "3c7b3b4b1b3b3b3b3b3b3b3b3b3b3b3b3b3b3b";
+      sha256 = "sha256-3c7b3b4b1";
+    };
+    meta.homepage = "https://github.com/victorhqc/tree-sitter-prisma";
+  };
 in
 {
   programs.nixvim = {
@@ -24,6 +36,7 @@ in
         folding = false;
         grammarPackages = pkgs.vimPlugins.nvim-treesitter.passthru.allGrammars ++ [
           treesitter-move-grammar
+          treesitter-prisma
         ];
         luaConfig.post=
         ''
@@ -50,6 +63,7 @@ in
     # installed and can be picked up by `tree-sitter`
     extraPlugins = [
       treesitter-move-grammar
+      treesitter-prisma
     ];
   };
 }

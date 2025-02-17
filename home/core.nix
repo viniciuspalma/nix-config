@@ -71,6 +71,7 @@
     supabase-cli
     gotrue-supabase
     terramate
+    opentofu
 
     # testing
     ddosify
