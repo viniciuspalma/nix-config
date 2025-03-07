@@ -24,10 +24,10 @@
   ];
 
   homebrew = {
-    enable = true;
+    enable = false;
 
     onActivation = {
-      autoUpdate = true;
+      # autoUpdate = true;
       # 'zap': uninstalls all formulae(and related files) not listed here.
       cleanup = "zap";
     };
@@ -61,6 +61,7 @@
 
       # Development
       "android-studio" # Android development
+      "insomnia" # RESTful API client
     ];
   };
 }

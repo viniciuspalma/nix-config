@@ -28,18 +28,21 @@
 
       servers = {
         clangd.enable   = true;
-        lua-ls.enable   = true;
+        lua_ls.enable   = true;
         texlab.enable   = true;
         marksman.enable = true;
         gopls.enable    = true;
         volar.enable    = true;
-        ts-ls.enable    = true;
+        ts_ls.enable    = true;
         eslint.enable   = true;
+        jdtls.enable    = true;
+        terraform_ls.enable = true;
 
-        rust-analyzer = {
+        rust_analyzer = {
           enable = true;
           installCargo = false;
           installRustc = false;
+          installRustfmt = false;
         };
       };
     };

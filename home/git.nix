@@ -32,6 +32,7 @@
       push.autoSetupRemote = true;
       pull.rebase = true;
       url."git@github.com:goflink".insteadOf = "https://github.com/goflink";
+      url."git@github.com:code-visionary".insteadOf = "https://github.com/code-visionary";
     };
 
     ignores = [
@@ -40,7 +41,6 @@
       ".vscode"
       ".direnv"
       ".envrc"
-      "flake.lock"
     ];
 
     # signing = {

@@ -19,8 +19,8 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "victorhqc";
       repo = "tree-sitter-prisma";
-      rev = "3c7b3b4b1b3b3b3b3b3b3b3b3b3b3b3b3b3b3b";
-      sha256 = "sha256-3c7b3b4b1";
+      tag = "v1.5.1";
+      hash = "sha256-WxR3URFjljD9IEoKRvo0eBbv16PGhrv9aTUWPw8XlJA=";
     };
     meta.homepage = "https://github.com/victorhqc/tree-sitter-prisma";
   };
@@ -53,6 +53,18 @@ in
                 -- requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
               },
               filetype = "move", -- if filetype does not match the parser name
+            }
+
+            parser_config.prisma = {
+              install_info = {
+                url = "${treesitter-prisma}", -- local path or git repo
+                files = {"src/parser.c"}, -- note that some parsers also require src/scanner.c or src/scanner.cc
+                -- optional entries:
+                --  branch = "main", -- default branch in case of git repo if different from master
+                -- generate_requires_npm = false, -- if stand-alone parser without npm dependencies
+                -- requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
+              },
+              filetype = "prisma", -- if filetype does not match the parser name
             }
           end
         '';

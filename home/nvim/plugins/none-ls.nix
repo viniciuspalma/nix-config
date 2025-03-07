@@ -7,7 +7,10 @@
 
       sources = {
         formatting = {
-          prettierd.enable = true;
+          prettierd = {
+            enable = true;
+            disableTsServerFormatter = true;
+          };
         };
       };
     };
