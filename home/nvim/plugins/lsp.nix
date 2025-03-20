@@ -36,7 +36,7 @@
         ts_ls.enable    = true;
         eslint.enable   = true;
         jdtls.enable    = true;
-        terraform_ls.enable = true;
+        terraformls.enable = true;
 
         rust_analyzer = {
           enable = true;

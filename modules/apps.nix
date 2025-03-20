@@ -24,7 +24,7 @@
   ];
 
   homebrew = {
-    enable = false;
+    enable = true;
 
     onActivation = {
       # autoUpdate = true;
@@ -62,6 +62,7 @@
       # Development
       "android-studio" # Android development
       "insomnia" # RESTful API client
+      "postman" # RESTful API client
     ];
   };
 }

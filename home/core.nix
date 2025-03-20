@@ -28,6 +28,8 @@
     boost # Free peer-reviewed portable C++ source libraries
     glew # The OpenGL Extension Wrangler Library
     freetype # A software library to render fonts
+    libffi # A portable foreign-function interface library
+    pkg-config # A helper tool used when compiling applications and libraries
 
     # misc
     cowsay # Configurable talking cow
@@ -47,7 +49,6 @@
     nodejs
     ruby_3_3
     python312
-    python311Packages.pip
     
     # devops
     (
@@ -79,6 +80,7 @@
     k6
     ghz
     pre-commit
+    httpie
 
     # protobuf
     protoc-gen-go

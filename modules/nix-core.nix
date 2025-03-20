@@ -9,7 +9,7 @@
   nixpkgs.config.allowUnfree = true;
 
   # Auto upgrade nix package and the daemon service.
-  services.nix-daemon.enable = true;
+  # services.nix-daemon.enable = true;
   # Use this instead of services.nix-daemon.enable if you
   # don't wan't the daemon service to be managed for you.
   # nix.useDaemon = true;
@@ -37,7 +37,7 @@
 
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
-  system.stateVersion = 4;
+  system.stateVersion = 6;
 
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = system;
