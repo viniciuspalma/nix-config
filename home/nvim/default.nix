@@ -13,6 +13,12 @@
     viAlias = true;
     vimAlias = true;
 
+    nixpkgs = {
+      config = {
+        allowUnfree = true;
+      };
+    };
+
     opts = {
       number = true;         # Show line numbers
       relativenumber = true; # Show relative line numbers

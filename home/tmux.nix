@@ -49,6 +49,21 @@
       set -g pane-base-index 1
       set-window-option -g pane-base-index 1
 
+      # catppuccin
+      set -g @catppuccin_l_left_separator ""
+      set -g @catppuccin_l_right_separator ""
+      set -g @catppuccin_r_left_separator ""
+      set -g @catppuccin_r_right_separator ""
+      set -g @catppuccin_window_separator_left ""
+      set -g @catppuccin_window_separator_right ""
+      set -g @catppuccin_status_separator_left ""
+      set -g @catppuccin_status_separator_right ""
+      set -g @catppuccin_window_middle_separator "█"
+      set -g @catppuccin_date_time "%Y-%m-%d %H:%M"
+      set -g @catppuccin_user "on"
+      set -g @catppuccin_host "on"
+      set -g @catppuccin_status_modules" "application session user host date_time"
+
       # Set new panes to open in current directory
       bind c new-window -c "#{pane_current_path}"
       bind '"' split-window -c "#{pane_current_path}"

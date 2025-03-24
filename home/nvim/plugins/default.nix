@@ -42,7 +42,7 @@
         settings.user_default_options.names = false;
       };
 
-      copilot-vim.enable = false;
+      copilot-vim.enable = true;
       luasnip.enable = true;
     };
   };
