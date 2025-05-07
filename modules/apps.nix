@@ -33,7 +33,6 @@
     };
 
     taps = [
-      "homebrew/services"
       "cfergeau/crc"
     ];
 
@@ -49,6 +48,7 @@
     casks = [
       "ollama"
       "google-chrome"
+      "zen-browser"
       "1password"
       "wifiman"
 

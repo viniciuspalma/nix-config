@@ -62,7 +62,6 @@
       set -g @catppuccin_date_time "%Y-%m-%d %H:%M"
       set -g @catppuccin_user "on"
       set -g @catppuccin_host "on"
-      set -g @catppuccin_status_modules" "application session user host date_time"
 
       # Set new panes to open in current directory
       bind c new-window -c "#{pane_current_path}"

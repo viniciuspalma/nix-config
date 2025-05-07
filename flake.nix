@@ -24,8 +24,8 @@
 
   outputs = inputs@{ self, nix-darwin, nixpkgs, nixvim, home-manager, ... }:
     let
-      username  = "vini";
-      hostname  = "Viniciuss-MacBook-Pro"; 
+      username  = "vinicius.palma";
+      hostname  = "ch-CQTMGK70R5"; 
       system    = "aarch64-darwin";
       useremail = "pockvini@gmail.com";
 
