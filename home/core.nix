@@ -73,6 +73,7 @@
     gotrue-supabase
     terramate
     opentofu
+    awscli2
 
     # testing
     ddosify

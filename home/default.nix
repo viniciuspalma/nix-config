@@ -34,6 +34,10 @@
     file."zsh-custom" = {
       source = ./zsh-custom;
     };
+
+    file.".testcontainers.properties" = {
+      source = ./.testcontainers.properties;
+    };
   };
 
   # Let Home Manager install and manage itself.

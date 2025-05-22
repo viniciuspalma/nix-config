@@ -41,6 +41,7 @@
     brews = [
       "vfkit"
       "sui"
+      "leapp-cli"
     ];
 
     # `brew install --cask`
@@ -63,6 +64,7 @@
       "android-studio" # Android development
       "insomnia" # RESTful API client
       "postman" # RESTful API client
+      "leapp" # Cloud with aws
     ];
   };
 }

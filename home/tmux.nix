@@ -68,7 +68,7 @@
       bind '"' split-window -c "#{pane_current_path}"
       bind % split-window -h -c "#{pane_current_path}"
 
-      bind-key -r f run-shell "tmux neww ~/.config/nix-darwin/scripts/tmux-sessionizer"
+      bind-key -r f run-shell "tmux neww ~/.config/nix-config/scripts/tmux-sessionizer"
 
       run '~/.tmux/plugins/tpm/tpm'
     '';

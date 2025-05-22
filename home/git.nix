@@ -41,6 +41,7 @@
       ".vscode"
       ".direnv"
       ".envrc"
+      ".nix-bin"
     ];
 
     # signing = {
