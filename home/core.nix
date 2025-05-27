@@ -58,6 +58,8 @@
      google-cloud-sdk.components.bigtable
      ]
     )
+    colima	
+    docker
     podman
     podman-compose
     qemu

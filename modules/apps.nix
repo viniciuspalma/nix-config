@@ -42,6 +42,7 @@
       "vfkit"
       "sui"
       "leapp-cli"
+      "pgweb" # 
     ];
 
     # `brew install --cask`
@@ -65,6 +66,7 @@
       "insomnia" # RESTful API client
       "postman" # RESTful API client
       "leapp" # Cloud with aws
+      "notion" # Note-taking and organization	 
     ];
   };
 }
