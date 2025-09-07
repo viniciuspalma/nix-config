@@ -50,13 +50,14 @@
     casks = [
       "ollama"
       "google-chrome"
-      "zen-browser"
+      "zen"
       "1password"
       "wifiman"
 
       # IM & audio & remote desktop & meeting
       "telegram"
       "discord"
+      "spotify"
 
       "raycast" # (HotKey: alt/option + space)search, caculate and run scripts(with many plugins)
       "stats" # beautiful system monitor
@@ -67,6 +68,7 @@
       "postman" # RESTful API client
       "leapp" # Cloud with aws
       "notion" # Note-taking and organization	 
+      "figma" # Design tool
     ];
   };
 }

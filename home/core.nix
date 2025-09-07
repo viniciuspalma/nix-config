@@ -42,6 +42,7 @@
     gh # GitHub CLI
     copier # A library for rendering projects templates
     caligula # A tool for disk image tool
+    mkcert # A simple tool to make locally-trusted development certificates
     
     # languages
     go
