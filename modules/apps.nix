@@ -61,14 +61,18 @@
 
       "raycast" # (HotKey: alt/option + space)search, caculate and run scripts(with many plugins)
       "stats" # beautiful system monitor
+      "nordvpn" # VPN
 
       # Development
       "android-studio" # Android development
+      "apidog" # RESTful API client
       "insomnia" # RESTful API client
       "postman" # RESTful API client
       "leapp" # Cloud with aws
       "notion" # Note-taking and organization	 
       "figma" # Design tool
+      "dbeaver-community" # Database management too
+      "proxyman" # HTTP Debugging Prox
     ];
   };
 }

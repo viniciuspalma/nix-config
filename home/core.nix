@@ -43,6 +43,7 @@
     copier # A library for rendering projects templates
     caligula # A tool for disk image tool
     mkcert # A simple tool to make locally-trusted development certificates
+    lazygit # A simple terminal UI for git commands
     
     # languages
     go
