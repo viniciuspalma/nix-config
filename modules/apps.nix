@@ -34,6 +34,7 @@
 
     taps = [
       "cfergeau/crc"
+      "withgraphite/tap"
     ];
 
     # `brew install`
@@ -43,6 +44,7 @@
       "sui"
       "leapp-cli"
       "pgweb" # 
+      "graphite" # withgraphite/tap/graphite CLI
     ];
 
     # `brew install --cask`
