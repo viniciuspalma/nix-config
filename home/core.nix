@@ -71,13 +71,13 @@
     telepresence2
     k9s
     pgcli
-    firebase-tools
     teller
     supabase-cli
     gotrue-supabase
     terramate
     opentofu
     awscli2
+    opencode
 
     # testing
     ddosify

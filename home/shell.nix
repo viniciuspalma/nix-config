@@ -32,11 +32,13 @@
   };
 
   home.sessionPath = [
+    "${config.home.homeDirectory}/.antigravity/antigravity/bin"
     "/Users/vini/.gem/ruby/3.3.0/bin"
     "/opt/homebrew/bin"
   ];
 
   home.shellAliases = {
+    agy = "${config.home.homeDirectory}/.antigravity/antigravity/bin/agy";
     k = "kubectl";
 
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";

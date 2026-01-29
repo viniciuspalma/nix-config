@@ -16,9 +16,6 @@
     enable = true;
     lfs.enable = true;
 
-    userName = username;
-    userEmail = useremail;
-
     includes = [
       {
         # use diffrent email & name for work
@@ -26,14 +23,6 @@
         condition = "gitdir:~/work/";
       }
     ];
-
-    extraConfig = {
-      init.defaultBranch = "main";
-      push.autoSetupRemote = true;
-      pull.rebase = true;
-      url."git@github.com:code-visionary".insteadOf = "https://github.com/code-visionary";
-      url."git@github.com:chocoapp".insteadOf = "https://github.com/chocoapp";
-    };
 
     ignores = [
       ".DS_Store"
@@ -49,28 +38,40 @@
     #   signByDefault = true;
     # };
 
-    delta = {
-      enable = true;
-      options = {
-        features = "side-by-side";
+    settings = {
+      user = {
+        name = username;
+        email = useremail;
       };
+      alias = {
+        # common aliases
+        br = "branch";
+        co = "checkout";
+        st = "status";
+        ls = "log --pretty=format:\"%C(yellow)%h%Cred%d\\\\ %Creset%s%Cblue\\\\ [%cn]\" --decorate";
+        ll = "log --pretty=format:\"%C(yellow)%h%Cred%d\\\\ %Creset%s%Cblue\\\\ [%cn]\" --decorate --numstat";
+        cm = "commit -m";
+        ca = "commit -am";
+        dc = "diff --cached";
+        amend = "commit --amend -m";
+
+        # aliases for submodule
+        update = "submodule update --init --recursive";
+        foreach = "submodule foreach";
+      };
+      init.defaultBranch = "main";
+      push.autoSetupRemote = true;
+      pull.rebase = true;
+      url."git@github.com:code-visionary".insteadOf = "https://github.com/code-visionary";
+      url."git@github.com:chocoapp".insteadOf = "https://github.com/chocoapp";
     };
+  };
 
-    aliases = {
-      # common aliases
-      br = "branch";
-      co = "checkout";
-      st = "status";
-      ls = "log --pretty=format:\"%C(yellow)%h%Cred%d\\\\ %Creset%s%Cblue\\\\ [%cn]\" --decorate";
-      ll = "log --pretty=format:\"%C(yellow)%h%Cred%d\\\\ %Creset%s%Cblue\\\\ [%cn]\" --decorate --numstat";
-      cm = "commit -m";
-      ca = "commit -am";
-      dc = "diff --cached";
-      amend = "commit --amend -m";
-
-      # aliases for submodule
-      update = "submodule update --init --recursive";
-      foreach = "submodule foreach";
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      features = "side-by-side";
     };
   };
 }
