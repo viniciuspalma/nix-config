@@ -4,7 +4,8 @@
   programs.vscode = {
     enable = true;
 
-    extensions = with pkgs.vscode-marketplace; [
+    profiles.default = {
+      extensions = with pkgs.vscode-marketplace; [
       alexkrechik.cucumberautocomplete
       bierner.markdown-preview-github-styles
       biomejs.biome
@@ -313,5 +314,6 @@
         command = "workbench.action.quickOpen";
       }
     ];
+    };
   };
 }
