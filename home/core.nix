@@ -84,7 +84,7 @@
     delve
     k6
     ghz
-    pre-commit
+    # pre-commit  # Disabled: depends on dotnet which depends on broken swift-5.10.1
     httpie
 
     # protobuf

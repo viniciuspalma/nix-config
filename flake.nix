@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs = {
-      url = "github:NixOS/nixpkgs/master";
+      url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     };
 
     nix-darwin = {
@@ -20,16 +20,20 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, nixvim, home-manager, ... }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, nixvim, home-manager, nix-vscode-extensions, ... }:
     let
       username  = "vinicius.palma";
       hostname  = "ch-CQTMGK70R5"; 
       system    = "aarch64-darwin";
       useremail = "pockvini@gmail.com";
 
-      nixvimModule = nixvim.homeManagerModules.nixvim;
+      nixvimModule = nixvim.homeModules.nixvim;
 
       specialArgs =
         inputs
@@ -48,6 +52,11 @@
           ./modules/system.nix
           ./modules/host-users.nix
           home-manager.darwinModules.home-manager
+          {
+            nixpkgs.overlays = [
+              nix-vscode-extensions.overlays.default
+            ];
+          }
           {
             home-manager = { 
               useGlobalPkgs = true;

@@ -30,7 +30,6 @@
         clangd.enable   = true;
         lua_ls.enable   = true;
         texlab.enable   = true;
-        marksman.enable = true;
         gopls.enable    = true;
         volar.enable    = true;
         ts_ls.enable    = true;

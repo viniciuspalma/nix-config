@@ -12,6 +12,7 @@
     ./starship.nix
     ./tmux.nix
     ./nvim
+    ./vscode.nix
     # ./zed.nix
   ];
 
