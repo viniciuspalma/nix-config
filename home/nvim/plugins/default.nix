@@ -13,7 +13,7 @@
     #   ./markdown-preview.nix
     #   ./neorg.nix
     #   ./neo-tree.nix
-    ./none-ls.nix
+    ./formatting.nix
     #   ./startify.nix
     #   ./tagbar.nix
     ./telescope.nix

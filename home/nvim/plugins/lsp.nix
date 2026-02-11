@@ -19,7 +19,6 @@
           gt = "type_definition";
           gi = "implementation";
           K = "hover";
-          "<leader>f" = "format";
           "<leader>vca" = "code_action";
           "<leader>vws" = "workspace_symbol";
           "<leader>vrn" = "rename";

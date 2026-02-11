@@ -91,8 +91,5 @@
     protoc-gen-go
     protobuf
 
-    # linting - formatting
-    eslint_d
-    nodePackages_latest.prettier_d_slim 
   ];
 }
