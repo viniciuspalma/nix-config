@@ -32,7 +32,16 @@
         gopls.enable    = true;
         volar.enable    = true;
         ts_ls.enable    = true;
-        eslint.enable   = true;
+        biome.enable    = true;
+        eslint = {
+          enable = true;
+          settings = {
+            rulesCustomizations = [
+              # Downgrade all warn-level rules so they don't show as diagnostics
+              { rule = "*"; severity = "info"; }
+            ];
+          };
+        };
         jdtls.enable    = true;
         terraformls.enable = true;
 

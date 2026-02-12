@@ -10,7 +10,7 @@ let
           stop = vim.uv.os_homedir(),
         })
         if #has_biome > 0 then
-          return { "biome" }
+          return { "biome-check" }
         end
         return { "prettierd" }
       end

@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   home.packages = with pkgs; [
     nnn # terminal file manager
 
@@ -15,7 +13,7 @@
     jq # A lightweight and flexible command-line JSON processor
     yq-go # yaml processer https://github.com/mikefarah/yq
     fzf # A command-line fuzzy finder
-    
+
     # libs
     aria2 # A lightweight multi-protocol & multi-source command-line download utility
     socat # replacement of openbsd-netcat
@@ -44,23 +42,24 @@
     caligula # A tool for disk image tool
     mkcert # A simple tool to make locally-trusted development certificates
     lazygit # A simple terminal UI for git commands
-    
+
     # languages
     go
     opam
     nodejs
     ruby_3_3
     python312
-    
+    alejandra
+
     # devops
     (
-     google-cloud-sdk.withExtraComponents [
-     google-cloud-sdk.components.gke-gcloud-auth-plugin
-     google-cloud-sdk.components.cbt
-     google-cloud-sdk.components.bigtable
-     ]
+      google-cloud-sdk.withExtraComponents [
+        google-cloud-sdk.components.gke-gcloud-auth-plugin
+        google-cloud-sdk.components.cbt
+        google-cloud-sdk.components.bigtable
+      ]
     )
-    colima	
+    colima
     docker
     podman
     podman-compose
@@ -84,12 +83,10 @@
     delve
     k6
     ghz
-    # pre-commit  # Disabled: depends on dotnet which depends on broken swift-5.10.1
     httpie
 
     # protobuf
     protoc-gen-go
     protobuf
-
   ];
 }
