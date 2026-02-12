@@ -1,4 +1,8 @@
 {
+  programs.nixvim.diagnostics = {
+    underline.severity.min = "error";
+  };
+
   programs.nixvim.plugins = {
     lsp = {
       enable = true;
@@ -33,15 +37,7 @@
         volar.enable    = true;
         ts_ls.enable    = true;
         biome.enable    = true;
-        eslint = {
-          enable = true;
-          settings = {
-            rulesCustomizations = [
-              # Downgrade all warn-level rules so they don't show as diagnostics
-              { rule = "*"; severity = "info"; }
-            ];
-          };
-        };
+        eslint.enable = true;
         jdtls.enable    = true;
         terraformls.enable = true;
 
