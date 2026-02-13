@@ -3,6 +3,7 @@
   imports = [
     ./_1password.nix
     ./core.nix
+    ./ghostty.nix
     ./git.nix
     ./go.nix
     ./kitty.nix

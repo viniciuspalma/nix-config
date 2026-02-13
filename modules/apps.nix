@@ -73,7 +73,8 @@
       "notion" # Note-taking and organization
       "figma" # Design tool
       "dbeaver-community" # Database management too
-      "proxyman" # HTTP Debugging Prox
+      "proxyman" # HTTP Debugging Proxy
+      "ghostty" # GPU-accelerated terminal emulator
     ];
   };
 }
