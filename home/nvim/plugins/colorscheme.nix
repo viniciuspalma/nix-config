@@ -2,10 +2,9 @@
   programs.nixvim = {
     # colorschemes.gruvbox.enable = true;
     # colorschemes.dracula-nvim.enable = true;
-    
+
     options = {
       background = "dark";
-  
     };
 
     config = {
@@ -21,7 +20,7 @@
             compile = false;
             undercurl = true;
             commentStyle.italic = true;
-            functionStyle = { };
+            functionStyle = {};
             transparent = false;
             dimInactive = false;
             terminalColors = true;

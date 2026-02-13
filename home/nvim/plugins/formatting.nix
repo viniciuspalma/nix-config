@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-let
+{pkgs, ...}: let
   webFormatters = {
     __raw = ''
       function(bufnr)
@@ -16,8 +14,7 @@ let
       end
     '';
   };
-in
-{
+in {
   programs.nixvim = {
     extraPackages = with pkgs; [
       biome
@@ -40,10 +37,10 @@ in
           json = webFormatters;
           jsonc = webFormatters;
           css = webFormatters;
-          html = [ "prettierd" ];
-          yaml = [ "prettierd" ];
-          markdown = [ "prettierd" ];
-	  nix = [ "alejandra" ];
+          html = ["prettierd"];
+          yaml = ["prettierd"];
+          markdown = ["prettierd"];
+          nix = ["alejandra"];
         };
       };
     };

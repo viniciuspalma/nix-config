@@ -20,9 +20,9 @@
     };
 
     opts = {
-      number = true;         # Show line numbers
+      number = true; # Show line numbers
       relativenumber = true; # Show relative line numbers
-      shiftwidth = 2;        # Tab width should be 2
+      shiftwidth = 2; # Tab width should be 2
       swapfile = false;
       undofile = true;
       updatetime = 50;

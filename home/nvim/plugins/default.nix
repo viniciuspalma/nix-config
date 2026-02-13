@@ -14,6 +14,7 @@
     #   ./neorg.nix
     #   ./neo-tree.nix
     ./formatting.nix
+    ./opencode.nix
     #   ./startify.nix
     #   ./tagbar.nix
     ./telescope.nix
@@ -27,7 +28,7 @@
     };
 
     plugins = {
-      web-devicons.enable = true; 
+      web-devicons.enable = true;
 
       gitsigns = {
         enable = true;

@@ -26,54 +26,65 @@
     };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, nixvim, home-manager, nix-vscode-extensions, ... }:
-    let
-      username  = "vinicius.palma";
-      hostname  = "ch-CQTMGK70R5"; 
-      system    = "aarch64-darwin";
-      useremail = "pockvini@gmail.com";
+  outputs = inputs @ {
+    self,
+    nix-darwin,
+    nixpkgs,
+    nixvim,
+    home-manager,
+    nix-vscode-extensions,
+    ...
+  }: let
+    username = "vinicius.palma";
+    hostname = "ch-CQTMGK70R5";
+    system = "aarch64-darwin";
+    useremail = "pockvini@gmail.com";
 
-      nixvimModule = nixvim.homeModules.nixvim;
+    nixvimModule = nixvim.homeModules.nixvim;
 
-      specialArgs =
-        inputs
-        // {
-          inherit username hostname system useremail;
-        };
-    in
-      {
-      # Build darwin flake using:
-      # $ darwin-rebuild build --flake .#Viniciuss-MacBook-Pro
-      darwinConfigurations."${hostname}" = nix-darwin.lib.darwinSystem {
-        inherit system specialArgs;
-        modules = [
-          ./modules/nix-core.nix
-          ./modules/apps.nix
-          ./modules/system.nix
-          ./modules/host-users.nix
-          home-manager.darwinModules.home-manager
-          {
-            nixpkgs.overlays = [
-              nix-vscode-extensions.overlays.default
-            ];
-          }
-          {
-            home-manager = { 
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              extraSpecialArgs = specialArgs;
-              users.${username} = { config, lib, pkgs, ... }: {
-                imports = [
-                  ./home
-                  nixvimModule
-                ];
-              };
-            };  
-          }
-        ];
+    specialArgs =
+      inputs
+      // {
+        inherit username hostname system useremail;
       };
-
-      # Expose the package set, including overlays, for convenience.
-      darwinPackages = self.darwinConfigurations."${hostname}".pkgs;
+  in {
+    # Build darwin flake using:
+    # $ darwin-rebuild build --flake .#Viniciuss-MacBook-Pro
+    darwinConfigurations."${hostname}" = nix-darwin.lib.darwinSystem {
+      inherit system specialArgs;
+      modules = [
+        ./modules/nix-core.nix
+        ./modules/apps.nix
+        ./modules/system.nix
+        ./modules/host-users.nix
+        home-manager.darwinModules.home-manager
+        {
+          nixpkgs.overlays = [
+            nix-vscode-extensions.overlays.default
+          ];
+        }
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            extraSpecialArgs = specialArgs;
+            users.${username} = {
+              config,
+              lib,
+              pkgs,
+              ...
+            }: {
+              imports = [
+                ./home
+                nixvimModule
+              ];
+            };
+          };
+        }
+      ];
     };
+
+    # Expose the package set, including overlays, for convenience.
+    darwinPackages = self.darwinConfigurations."${hostname}".pkgs;
+  };
 }

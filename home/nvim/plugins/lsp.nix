@@ -1,6 +1,10 @@
 {
-  programs.nixvim.diagnostics = {
-    underline.severity.min = "error";
+  programs.nixvim.diagnostic.settings = {
+    underline = {
+      severity = {
+        min.__raw = "vim.diagnostic.severity.ERROR";
+      };
+    };
   };
 
   programs.nixvim.plugins = {
@@ -16,7 +20,6 @@
           "<leader>vd" = "open_float";
         };
 
-
         lspBuf = {
           gd = "definition";
           gD = "references";
@@ -30,15 +33,15 @@
       };
 
       servers = {
-        clangd.enable   = true;
-        lua_ls.enable   = true;
-        texlab.enable   = true;
-        gopls.enable    = true;
-        volar.enable    = true;
-        ts_ls.enable    = true;
-        biome.enable    = true;
+        clangd.enable = true;
+        lua_ls.enable = true;
+        texlab.enable = true;
+        gopls.enable = true;
+        volar.enable = true;
+        ts_ls.enable = true;
+        biome.enable = true;
         eslint.enable = true;
-        jdtls.enable    = true;
+        jdtls.enable = true;
         terraformls.enable = true;
 
         rust_analyzer = {

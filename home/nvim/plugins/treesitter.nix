@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   programs.nixvim = {
     plugins = {
       treesitter = {
@@ -21,17 +20,17 @@
           tsx
           ruby
           python
-          ocaml         # for opam
-          proto         # protobuf
-          sql           # pgcli, supabase
+          ocaml # for opam
+          proto # protobuf
+          sql # pgcli, supabase
 
           # DevOps / Config (from your setup)
           nix
           dockerfile
-          yaml          # kubernetes, docker-compose
+          yaml # kubernetes, docker-compose
           toml
           json
-          hcl           # terraform/opentofu
+          hcl # terraform/opentofu
           terraform
 
           # Shell & scripting
@@ -49,16 +48,16 @@
           css
 
           # Editor / Docs
-          lua           # neovim config
+          lua # neovim config
           vim
           vimdoc
           markdown
           markdown_inline
           regex
-          query         # treesitter queries
+          query # treesitter queries
 
           # Misc useful
-          c             # often needed as dependency
+          c # often needed as dependency
           cpp
           comment
         ];

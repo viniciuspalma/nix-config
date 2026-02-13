@@ -1,12 +1,11 @@
-{ pkgs, ...}: {
-
+{pkgs, ...}: {
   ##########################################################################
-  # 
+  #
   #  Install all apps and packages here.
   #
   #  NOTE: Your can find all available options in:
   #    https://daiderd.com/nix-darwin/manual/index.html
-  # 
+  #
   # TODO Fell free to modify this file to fit your needs.
   #
   ##########################################################################
@@ -43,7 +42,7 @@
       "vfkit"
       "sui"
       "leapp-cli"
-      "pgweb" # 
+      "pgweb" #
       "graphite" # withgraphite/tap/graphite CLI
     ];
 
@@ -71,7 +70,7 @@
       "insomnia" # RESTful API client
       "postman" # RESTful API client
       "leapp" # Cloud with aws
-      "notion" # Note-taking and organization	 
+      "notion" # Note-taking and organization
       "figma" # Design tool
       "dbeaver-community" # Database management too
       "proxyman" # HTTP Debugging Prox

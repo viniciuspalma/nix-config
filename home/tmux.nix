@@ -1,5 +1,4 @@
 {pkgs, ...}: {
-
   programs.tmux = {
     enable = true;
 
@@ -23,7 +22,7 @@
       gruvbox
       sensible
       catppuccin
-      yank 
+      yank
     ];
 
     terminal = "screen-256color";

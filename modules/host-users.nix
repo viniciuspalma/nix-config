@@ -1,12 +1,13 @@
-
-{ hostname, username, ... }:
-
+{
+  hostname,
+  username,
+  ...
+}:
 #############################################################
 #
 #  Host & Users configuration
 #
 #############################################################
-
 {
   networking.hostName = hostname;
   networking.computerName = hostname;
@@ -14,10 +15,10 @@
 
   system.primaryUser = username;
 
-  users.users."${username}"= {
+  users.users."${username}" = {
     home = "/Users/${username}";
     description = username;
   };
 
-  nix.settings.trusted-users = [ username ];
+  nix.settings.trusted-users = [username];
 }
