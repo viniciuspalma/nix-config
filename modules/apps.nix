@@ -75,6 +75,7 @@
       "dbeaver-community" # Database management too
       "proxyman" # HTTP Debugging Proxy
       "ghostty" # GPU-accelerated terminal emulator
+      "codex" # AI pair programmer
     ];
   };
 }

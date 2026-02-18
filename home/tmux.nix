@@ -15,8 +15,8 @@
     escapeTime = 50;
 
     keyMode = "vi";
-    # Overrides the hjkl and HJKL bindings for pane navigation and resizing in VI mode
-    customPaneNavigationAndResize = true;
+    # Dvorak pane navigation and resizing is configured manually in extraConfig
+    customPaneNavigationAndResize = false;
 
     plugins = with pkgs.tmuxPlugins; [
       gruvbox
@@ -41,7 +41,7 @@
 
       # auto window rename
       set -g automatic-rename
-      set -g automatic-rename-format '#{pane_current_command}'
+      set -g automatic-rename-format '#{?#{==:#{pane_current_command},zsh},#{b:pane_current_path},#{pane_current_command}}'
 
       # Start windows and panes at 1, not 0
       set -g base-index 1
@@ -62,14 +62,28 @@
       set -g @catppuccin_user "on"
       set -g @catppuccin_host "on"
 
+      # Use window name (#W) instead of pane title (#T) for shorter labels
+      set -g @catppuccin_window_text " #W"
+      set -g @catppuccin_window_current_text " #W"
+
       # Set new panes to open in current directory
       bind c new-window -c "#{pane_current_path}"
       bind '"' split-window -c "#{pane_current_path}"
       bind % split-window -h -c "#{pane_current_path}"
 
-      bind-key -r f run-shell "tmux neww ~/.config/nix-config/scripts/tmux-sessionizer"
+      # Dvorak pane navigation (htnl instead of hjkl)
+      bind h select-pane -L
+      bind t select-pane -D
+      bind n select-pane -U
+      bind l select-pane -R
 
-      run '~/.tmux/plugins/tpm/tpm'
+      # Dvorak pane resizing (HTNL instead of HJKL)
+      bind -r H resize-pane -L 5
+      bind -r T resize-pane -D 5
+      bind -r N resize-pane -U 5
+      bind -r L resize-pane -R 5
+
+      bind-key -r f run-shell "tmux neww ~/.config/nix-config/scripts/tmux-sessionizer"
     '';
   };
 
