@@ -43,47 +43,22 @@
 
     nixvimModule = nixvim.homeModules.nixvim;
 
-    lgpioFixOverlay = _final: prev: {
-      python312Packages = prev.python312Packages.overrideScope (_pyFinal: pyPrev: {
-        lgpio = pyPrev.lgpio.overrideAttrs (old: {
-          NIX_CFLAGS_COMPILE =
-            "${old.NIX_CFLAGS_COMPILE or ""} -Wno-error=incompatible-pointer-types";
-        });
-      });
-    };
-
     hosts = {
       "${darwinHostname}" = {
         kind = "darwin";
         system = "aarch64-darwin";
-        fan = {
-          canControl = false;
-          canReadTach = false;
-        };
       };
       blade-1 = {
         kind = "blade";
         system = "aarch64-linux";
-        fan = {
-          canControl = true;
-          canReadTach = true;
-        };
       };
       blade-2 = {
         kind = "blade";
         system = "aarch64-linux";
-        fan = {
-          canControl = true;
-          canReadTach = true;
-        };
       };
       blade-3 = {
         kind = "blade";
         system = "aarch64-linux";
-        fan = {
-          canControl = false;
-          canReadTach = true;
-        };
       };
     };
 
@@ -98,7 +73,6 @@
         isBlade = host.kind == "blade";
         isDarwin = host.kind == "darwin";
         isLinux = host.kind != "darwin";
-        fan = host.fan;
       };
 
     darwinSpecialArgs = mkSpecialArgs darwinHostname darwinHost;
@@ -107,9 +81,6 @@
       pkgs = import nixpkgs {
         system = host.system;
         config.allowUnfree = true;
-        overlays = [
-          lgpioFixOverlay
-        ];
       };
       specialArgs = mkSpecialArgs hostname host;
     in

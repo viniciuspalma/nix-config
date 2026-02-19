@@ -5,7 +5,7 @@ After=multi-user.target
 [Service]
 Type=simple
 WorkingDirectory=/tmp
-ExecStart=/home/vinicius.palma/.nix-profile/bin/fan-control-service
+ExecStart=/usr/bin/python3 /home/vinicius.palma/.config/nix-config/home/fan/fan_control.py
 Restart=on-failure
 RestartSec=2
 

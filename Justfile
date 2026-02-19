@@ -37,12 +37,14 @@ blade-build:
   nix build 'path:.#homeConfigurations."{{blade_user}}@{{blade_hostname}}".activationPackage' \
     --extra-experimental-features 'nix-command flakes'
 
-blade-switch:
+blade-sync:
   ssh {{blade_user}}@{{blade_hostname}} 'mkdir -p ~/.config/nix-config'
   rsync -az --delete \
     --exclude '.git/' \
     --exclude 'result/' \
     ./ {{blade_user}}@{{blade_hostname}}:~/.config/nix-config/
+
+blade-switch: blade-sync
   ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#{{blade_user}}@{{blade_hostname}}'"
 
 blade-switch-all:
@@ -52,23 +54,23 @@ blade-switch-all:
 
 ############################################################################
 #
-#  Blade fan control commands
+#  Blade fan control (script-only; outside Home Manager)
 #
 ############################################################################
 
-fan-role:
-  ssh {{blade_user}}@{{blade_hostname}} 'if [ -f ~/.config/fan-control/fan-control.service ]; then echo controller; else echo read-only; fi'
-
-fan-install-service:
-  ssh {{blade_user}}@{{blade_hostname}} 'if [ ! -f ~/.config/fan-control/fan-control.service ]; then echo "fan control service is not available on this host"; exit 1; fi; sudo install -Dm644 ~/.config/fan-control/fan-control.service /etc/systemd/system/fan-control.service; sudo mkdir -p /etc/fan-control; sudo systemctl daemon-reload'
-
-fan-enable:
+fan-install: blade-sync
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo apt-get update'
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo apt-get install -y python3-gpiozero'
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo apt-get install -y python3-rpi.gpio || true'
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo apt-get install -y python3-lgpio || true'
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo mkdir -p /etc/fan-control'
+  ssh {{blade_user}}@{{blade_hostname}} "echo {{fan_profile}} | sudo tee /etc/fan-control/profile >/dev/null"
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo install -m 0644 ~/.config/nix-config/home/fan/fan-control.service /etc/systemd/system/fan-control.service'
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl daemon-reload'
   ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl enable --now fan-control.service'
 
-fan-disable:
-  ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl disable --now fan-control.service'
-
-fan-restart:
+fan-profile:
+  ssh {{blade_user}}@{{blade_hostname}} "echo {{fan_profile}} | sudo tee /etc/fan-control/profile >/dev/null"
   ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl restart fan-control.service'
 
 fan-status:
@@ -77,16 +79,12 @@ fan-status:
 fan-logs:
   ssh {{blade_user}}@{{blade_hostname}} 'sudo journalctl -u fan-control.service -n 100 --no-pager'
 
-fan-set-profile:
-  ssh {{blade_user}}@{{blade_hostname}} "printf '%s\n' '{{fan_profile}}' | sudo tee /etc/fan-control/profile >/dev/null && sudo systemctl restart fan-control.service"
-
 fan-read-rpm:
-  ssh {{blade_user}}@{{blade_hostname}} '~/.nix-profile/bin/fan-read-rpm'
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo python3 ~/.config/nix-config/home/fan/read_fan_speed.py'
 
-fan-setup-controllers:
-  for host in blade-1 blade-2; do \
-    just --set blade_hostname "$host" fan-install-service; \
-    just --set blade_hostname "$host" fan-enable; \
+fan-install-all:
+  for host in blade-1 blade-2 blade-3; do \
+    just --set blade_hostname "$host" fan-install; \
   done
 
 ############################################################################

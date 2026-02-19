@@ -30,9 +30,8 @@ The blade hosts intentionally avoid macOS-only settings/apps.
 - `home/core.nix`: Darwin user packages
 - `home/core-linux.nix`: Linux blade package profile
 - `home/linux.nix`: Home Manager settings for non-NixOS Linux (`targets.genericLinux`)
-- `home/fan-control.nix`: fan package and script wiring for blades
-- `home/fan/`: fan control script, tach script, and systemd service template
-- `Justfile`: helper commands for darwin, blades, and fan operations
+- `home/fan/`: blade fan scripts + systemd unit (managed outside Nix/Home Manager)
+- `Justfile`: helper commands for darwin, blade activation, and fan operations
 
 ## Apply on macOS (local host)
 
@@ -71,6 +70,12 @@ just --set blade_hostname blade-2 blade-switch
 just --set blade_hostname blade-3 blade-switch
 ```
 
+Sync repo changes to a blade without running Home Manager:
+
+```bash
+just --set blade_hostname blade-3 blade-sync
+```
+
 `blade-switch` does two things:
 
 1. Syncs your local repo contents (including uncommitted local changes) to `~/.config/nix-config` on the blade.
@@ -83,67 +88,47 @@ rsync -az --delete --exclude '.git/' --exclude 'result/' ./ vinicius.palma@blade
 ssh vinicius.palma@blade-1 "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#vinicius.palma@blade-1'"
 ```
 
-## Fan Control on Blades
+## Blade Fan Control (Script-only, outside Nix)
 
-### Host roles
+The fan setup is intentionally kept out of Home Manager/Nix builds on blades.
+Scripts live in this repo under `home/fan/` and run with system Python packages.
 
-- `blade-1`: PWM control + RPM read
-- `blade-2`: PWM control + RPM read
-- `blade-3`: RPM read only (no PWM control service)
-
-### What gets installed by Home Manager
-
-- `~/.config/fan-control/fan_control.py` on controller hosts
-- `~/.config/fan-control/read_fan_speed.py` on all blades
-- `~/.config/fan-control/fan-control.service` on controller hosts
-- Binaries in `~/.nix-profile/bin`:
-  - `fan-control-service` (controller hosts)
-  - `fan-read-rpm` (all blades)
-
-### Controller setup (`blade-1` and `blade-2`)
-
-After `blade-switch`, install and start systemd service:
+Install on one blade:
 
 ```bash
-just --set blade_hostname blade-1 fan-install-service
-just --set blade_hostname blade-1 fan-enable
+just --set blade_hostname blade-1 fan-install
 ```
 
-Repeat on `blade-2`.
-
-### Configure fan curve profile
-
-Available profiles: `linear`, `ease_in`, `ease_out`, `ease_in_out`
+Install on all blades:
 
 ```bash
-just --set blade_hostname blade-1 --set fan_profile ease_out fan-set-profile
-just --set blade_hostname blade-2 --set fan_profile ease_out fan-set-profile
+just fan-install-all
 ```
 
-### Monitor and troubleshoot
+Useful commands:
 
 ```bash
 just --set blade_hostname blade-1 fan-status
 just --set blade_hostname blade-1 fan-logs
 just --set blade_hostname blade-1 fan-read-rpm
+just --set blade_hostname blade-1 --set fan_profile ease_out fan-profile
 ```
 
-For `blade-3` (read-only):
+What `fan-install` does:
 
-```bash
-just --set blade_hostname blade-3 fan-read-rpm
-```
+1. Syncs repo files to `~/.config/nix-config` on the blade.
+2. Installs system Python GPIO packages with `apt`.
+3. Writes `/etc/fan-control/profile`.
+4. Installs `home/fan/fan-control.service` to `/etc/systemd/system/fan-control.service`.
+5. Enables and starts the service.
 
-### Notes
+Hardware note:
 
-- Compute Blade PWM control should run only on the PWM-capable nodes you mapped (`blade-1` and `blade-2`).
-- `blade-3` is intentionally read-only in this setup.
-- Service profile file path is `/etc/fan-control/profile`.
-- `fan-install-service` will fail on read-only hosts by design.
-- Fan scripts run with Nix-managed Python and GPIO dependencies (`gpiozero` + `lgpio`).
+- Only the blade in Port A/J1 can drive PWM fan speed.
+- Other blades can read tach RPM only.
 
 ## General Notes
 
 - `path:.#...` is used so local changes are evaluated even before `git add`.
 - Blade networking is DHCP-first in this setup.
-- Keep `blade-1/2/3` identical initially except hardware-role overrides (fan control vs read-only).
+- Keep `blade-1/2/3` identical initially except hardware-role overrides (Port A/J1 controls PWM; others are read-only for fan tach).

@@ -26,7 +26,6 @@
   linuxImports = [
     ./linux.nix
     ./core-linux.nix
-    ./fan-control.nix
   ];
 in {
   imports =
