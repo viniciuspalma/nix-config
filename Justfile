@@ -3,6 +3,7 @@
 darwin_hostname := ch-CQTMGK70R5
 blade_hostname := blade-1
 blade_user := vinicius.palma
+fan_profile := linear
 
 ############################################################################
 #
@@ -41,6 +42,39 @@ blade-switch:
     --extra-experimental-features 'nix-command flakes'); \
   nix copy --to ssh://{{blade_user}}@{{blade_hostname}} "$path"; \
   ssh {{blade_user}}@{{blade_hostname}} "$path/activate"
+
+############################################################################
+#
+#  Blade fan control commands
+#
+############################################################################
+
+fan-role:
+  ssh {{blade_user}}@{{blade_hostname}} 'if [ -f ~/.config/fan-control/fan-control.service ]; then echo controller; else echo read-only; fi'
+
+fan-install-service:
+  ssh {{blade_user}}@{{blade_hostname}} 'if [ ! -f ~/.config/fan-control/fan-control.service ]; then echo "fan control service is not available on this host"; exit 1; fi; sudo install -Dm644 ~/.config/fan-control/fan-control.service /etc/systemd/system/fan-control.service; sudo mkdir -p /etc/fan-control; sudo systemctl daemon-reload'
+
+fan-enable:
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl enable --now fan-control.service'
+
+fan-disable:
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl disable --now fan-control.service'
+
+fan-restart:
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl restart fan-control.service'
+
+fan-status:
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl status fan-control.service --no-pager'
+
+fan-logs:
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo journalctl -u fan-control.service -n 100 --no-pager'
+
+fan-set-profile:
+  ssh {{blade_user}}@{{blade_hostname}} "printf '%s\n' '{{fan_profile}}' | sudo tee /etc/fan-control/profile >/dev/null && sudo systemctl restart fan-control.service"
+
+fan-read-rpm:
+  ssh {{blade_user}}@{{blade_hostname}} '~/.nix-profile/bin/fan-read-rpm'
 
 ############################################################################
 #

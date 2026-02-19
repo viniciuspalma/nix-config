@@ -42,6 +42,7 @@
     caligula # A tool for disk image tool
     mkcert # A simple tool to make locally-trusted development certificates
     lazygit # A simple terminal UI for git commands
+    just # A command runner similar to make with an emphasis on usability
 
     # languages
     go

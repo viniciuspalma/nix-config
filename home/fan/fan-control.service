@@ -1,0 +1,13 @@
+[Unit]
+Description=Compute Blade PWM fan control
+After=multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=/tmp
+ExecStart=/home/vinicius.palma/.nix-profile/bin/fan-control-service
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
