@@ -71,13 +71,16 @@ just --set blade_hostname blade-2 blade-switch
 just --set blade_hostname blade-3 blade-switch
 ```
 
+`blade-switch` does two things:
+
+1. Syncs your local repo contents (including uncommitted local changes) to `~/.config/nix-config` on the blade.
+2. Runs Home Manager switch directly on the blade.
+
 Equivalent raw commands:
 
 ```bash
-path=$(nix path-info 'path:.#homeConfigurations."vinicius.palma@blade-1".activationPackage' \
-  --extra-experimental-features 'nix-command flakes')
-nix copy --to ssh://vinicius.palma@blade-1 "$path"
-ssh vinicius.palma@blade-1 "$path/activate"
+rsync -az --delete --exclude '.git/' --exclude 'result/' ./ vinicius.palma@blade-1:~/.config/nix-config/
+ssh vinicius.palma@blade-1 "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#\"vinicius.palma@blade-1\"'"
 ```
 
 ## Fan Control on Blades

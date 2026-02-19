@@ -1,9 +1,9 @@
 # just is a command runner, Justfile is very similar to Makefile, but simpler.
 
-darwin_hostname := ch-CQTMGK70R5
-blade_hostname := blade-1
-blade_user := vinicius.palma
-fan_profile := linear
+darwin_hostname := "ch-CQTMGK70R5"
+blade_hostname := "blade-1"
+blade_user := "vinicius.palma"
+fan_profile := "linear"
 
 ############################################################################
 #
@@ -38,10 +38,11 @@ blade-build:
     --extra-experimental-features 'nix-command flakes'
 
 blade-switch:
-  path=$(nix path-info 'path:.#homeConfigurations."{{blade_user}}@{{blade_hostname}}".activationPackage' \
-    --extra-experimental-features 'nix-command flakes'); \
-  nix copy --to ssh://{{blade_user}}@{{blade_hostname}} "$path"; \
-  ssh {{blade_user}}@{{blade_hostname}} "$path/activate"
+  rsync -az --delete \
+    --exclude '.git/' \
+    --exclude 'result/' \
+    ./ {{blade_user}}@{{blade_hostname}}:~/.config/nix-config/
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#\"{{blade_user}}@{{blade_hostname}}\"'"
 
 ############################################################################
 #
