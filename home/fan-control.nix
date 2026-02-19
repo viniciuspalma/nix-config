@@ -12,7 +12,7 @@
   canControl = fan.canControl or false;
   canReadTach = fan.canReadTach or false;
 
-  fanPython = pkgs.python3.withPackages (ps: [
+  fanPython = pkgs.python312.withPackages (ps: [
     ps.gpiozero
     ps.lgpio
   ]);
@@ -35,8 +35,7 @@
 in
   lib.mkIf isBlade {
     home.packages =
-      [fanPython]
-      ++ lib.optionals canControl [fanControlBin]
+      lib.optionals canControl [fanControlBin]
       ++ lib.optionals canReadTach [fanReadBin];
 
     home.file =

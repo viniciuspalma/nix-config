@@ -38,11 +38,17 @@ blade-build:
     --extra-experimental-features 'nix-command flakes'
 
 blade-switch:
+  ssh {{blade_user}}@{{blade_hostname}} 'mkdir -p ~/.config/nix-config'
   rsync -az --delete \
     --exclude '.git/' \
     --exclude 'result/' \
     ./ {{blade_user}}@{{blade_hostname}}:~/.config/nix-config/
-  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#\"{{blade_user}}@{{blade_hostname}}\"'"
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#{{blade_user}}@{{blade_hostname}}'"
+
+blade-switch-all:
+  for host in blade-1 blade-2 blade-3; do \
+    just --set blade_hostname "$host" blade-switch; \
+  done
 
 ############################################################################
 #
@@ -76,6 +82,12 @@ fan-set-profile:
 
 fan-read-rpm:
   ssh {{blade_user}}@{{blade_hostname}} '~/.nix-profile/bin/fan-read-rpm'
+
+fan-setup-controllers:
+  for host in blade-1 blade-2; do \
+    just --set blade_hostname "$host" fan-install-service; \
+    just --set blade_hostname "$host" fan-enable; \
+  done
 
 ############################################################################
 #

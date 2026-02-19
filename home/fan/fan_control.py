@@ -131,6 +131,31 @@ def get_lgpio_factory():
         return None
 
 
+def get_rpigpio_factory():
+    try:
+        from gpiozero.pins.rpigpio import RPiGPIOFactory
+    except Exception as exc:  # pragma: no cover - hardware/runtime dependent
+        print(
+            f"RPiGPIOFactory unavailable ({exc}); falling back to default pin factory.",
+            file=sys.stderr,
+        )
+        return None
+
+    try:
+        return RPiGPIOFactory()
+    except Exception as exc:  # pragma: no cover - hardware/runtime dependent
+        print(
+            f"Failed to initialize RPiGPIOFactory ({exc}); using default pin factory.",
+            file=sys.stderr,
+        )
+        return None
+
+
+def get_pin_factory():
+    # Prefer LGPIO when available, then fall back to RPi.GPIO backend.
+    return get_lgpio_factory() or get_rpigpio_factory()
+
+
 def ensure_working_dir():
     try:
         cwd = os.getcwd()
@@ -178,7 +203,7 @@ def main():
     signal.signal(signal.SIGTERM, lambda *_args: sys.exit(0))
     ensure_working_dir()
 
-    pin_factory = get_lgpio_factory()
+    pin_factory = get_pin_factory()
     fan_device = PWMOutputDevice(PWM_PIN, pin_factory=pin_factory)
 
     try:

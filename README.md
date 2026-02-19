@@ -56,7 +56,7 @@ Run on each blade host (replace hostname accordingly):
 ssh vinicius.palma@blade-1
 git clone <your-repo-url> ~/.config/nix-config
 cd ~/.config/nix-config
-nix run home-manager/master -- switch --flake 'path:.#"vinicius.palma@blade-1"'
+nix run home-manager/master -- switch --flake 'path:.#vinicius.palma@blade-1'
 ```
 
 Repeat with `blade-2` and `blade-3`.
@@ -80,7 +80,7 @@ Equivalent raw commands:
 
 ```bash
 rsync -az --delete --exclude '.git/' --exclude 'result/' ./ vinicius.palma@blade-1:~/.config/nix-config/
-ssh vinicius.palma@blade-1 "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#\"vinicius.palma@blade-1\"'"
+ssh vinicius.palma@blade-1 "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#vinicius.palma@blade-1'"
 ```
 
 ## Fan Control on Blades
@@ -140,6 +140,7 @@ just --set blade_hostname blade-3 fan-read-rpm
 - `blade-3` is intentionally read-only in this setup.
 - Service profile file path is `/etc/fan-control/profile`.
 - `fan-install-service` will fail on read-only hosts by design.
+- Fan scripts run with Nix-managed Python and GPIO dependencies (`gpiozero` + `lgpio`).
 
 ## General Notes
 

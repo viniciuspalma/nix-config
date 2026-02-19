@@ -43,6 +43,15 @@
 
     nixvimModule = nixvim.homeModules.nixvim;
 
+    lgpioFixOverlay = _final: prev: {
+      python312Packages = prev.python312Packages.overrideScope (_pyFinal: pyPrev: {
+        lgpio = pyPrev.lgpio.overrideAttrs (old: {
+          NIX_CFLAGS_COMPILE =
+            "${old.NIX_CFLAGS_COMPILE or ""} -Wno-error=incompatible-pointer-types";
+        });
+      });
+    };
+
     hosts = {
       "${darwinHostname}" = {
         kind = "darwin";
@@ -98,6 +107,9 @@
       pkgs = import nixpkgs {
         system = host.system;
         config.allowUnfree = true;
+        overlays = [
+          lgpioFixOverlay
+        ];
       };
       specialArgs = mkSpecialArgs hostname host;
     in
