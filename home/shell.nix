@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  pkgs,
   ...
 }: {
   programs.zsh = {
@@ -30,16 +31,25 @@
     };
   };
 
-  home.sessionVariables = {
-    USE_GKE_GCLOUD_AUTH_PLUGIN = "True";
-    ANDROID_HOME = "${config.home.homeDirectory}/Library/Android/sdk";
-  };
+  home.sessionVariables =
+    {
+      USE_GKE_GCLOUD_AUTH_PLUGIN = "True";
+    }
+    // lib.optionalAttrs pkgs.stdenv.isDarwin {
+      ANDROID_HOME = "${config.home.homeDirectory}/Library/Android/sdk";
+    };
 
-  home.sessionPath = [
-    "${config.home.homeDirectory}/.antigravity/antigravity/bin"
-    "/Users/vini/.gem/ruby/3.3.0/bin"
-    "/opt/homebrew/bin"
-  ];
+  home.sessionPath =
+    [
+      "${config.home.homeDirectory}/.antigravity/antigravity/bin"
+    ]
+    ++ lib.optionals pkgs.stdenv.isDarwin [
+      "/Users/vini/.gem/ruby/3.3.0/bin"
+      "/opt/homebrew/bin"
+    ]
+    ++ lib.optionals pkgs.stdenv.isLinux [
+      "${config.home.homeDirectory}/.local/bin"
+    ];
 
   home.shellAliases = {
     agy = "${config.home.homeDirectory}/.antigravity/antigravity/bin/agy";

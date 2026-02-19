@@ -1,19 +1,37 @@
-{username, ...}: {
-  # import sub modules
-  imports = [
-    ./_1password.nix
-    ./core.nix
-    ./ghostty.nix
+{
+  username,
+  lib,
+  isDarwin,
+  isLinux,
+  ...
+}: let
+  sharedImports = [
     ./git.nix
     ./go.nix
-    ./kitty.nix
     ./shell.nix
     ./starship.nix
     ./tmux.nix
     ./nvim
+  ];
+
+  darwinImports = [
+    ./_1password.nix
+    ./core.nix
+    ./ghostty.nix
+    ./kitty.nix
     ./vscode.nix
     # ./zed.nix
   ];
+
+  linuxImports = [
+    ./linux.nix
+    ./core-linux.nix
+  ];
+in {
+  imports =
+    sharedImports
+    ++ lib.optionals isDarwin darwinImports
+    ++ lib.optionals isLinux linuxImports;
 
   # Home Manager needs a bit of information about you and the
   # paths it should manage.

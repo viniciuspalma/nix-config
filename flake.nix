@@ -1,5 +1,5 @@
 {
-  description = "Configuration MacOs";
+  description = "Configuration for macOS and Ubuntu blades";
 
   inputs = {
     nixpkgs = {
@@ -35,23 +35,72 @@
     nix-vscode-extensions,
     ...
   }: let
+    lib = nixpkgs.lib;
+
     username = "vinicius.palma";
-    hostname = "ch-CQTMGK70R5";
-    system = "aarch64-darwin";
     useremail = "pockvini@gmail.com";
+    darwinHostname = "ch-CQTMGK70R5";
 
     nixvimModule = nixvim.homeModules.nixvim;
 
-    specialArgs =
+    hosts = {
+      "${darwinHostname}" = {
+        kind = "darwin";
+        system = "aarch64-darwin";
+      };
+      blade-1 = {
+        kind = "blade";
+        system = "aarch64-linux";
+      };
+      blade-2 = {
+        kind = "blade";
+        system = "aarch64-linux";
+      };
+      blade-3 = {
+        kind = "blade";
+        system = "aarch64-linux";
+      };
+    };
+
+    bladeHosts = lib.filterAttrs (_: host: host.kind == "blade") hosts;
+    darwinHost = hosts.${darwinHostname};
+
+    mkSpecialArgs = hostname: host:
       inputs
       // {
-        inherit username hostname system useremail;
+        inherit username useremail hostname;
+        system = host.system;
+        isBlade = host.kind == "blade";
+        isDarwin = host.kind == "darwin";
+        isLinux = host.kind != "darwin";
+      };
+
+    darwinSpecialArgs = mkSpecialArgs darwinHostname darwinHost;
+
+    mkBladeHomeConfiguration = hostname: host: let
+      pkgs = import nixpkgs {
+        system = host.system;
+        config.allowUnfree = true;
+      };
+      specialArgs = mkSpecialArgs hostname host;
+    in
+      home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = specialArgs;
+        modules = [
+          ./home
+          nixvimModule
+          {
+            home.homeDirectory = "/home/${username}";
+          }
+        ];
       };
   in {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#Viniciuss-MacBook-Pro
-    darwinConfigurations."${hostname}" = nix-darwin.lib.darwinSystem {
-      inherit system specialArgs;
+    darwinConfigurations."${darwinHostname}" = nix-darwin.lib.darwinSystem {
+      system = darwinHost.system;
+      specialArgs = darwinSpecialArgs;
       modules = [
         ./modules/nix-core.nix
         ./modules/apps.nix
@@ -67,7 +116,7 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            extraSpecialArgs = specialArgs;
+            extraSpecialArgs = darwinSpecialArgs;
             users.${username} = {
               config,
               lib,
@@ -84,7 +133,13 @@
       ];
     };
 
+    homeConfigurations =
+      lib.mapAttrs'
+      (hostname: host:
+        lib.nameValuePair "${username}@${hostname}" (mkBladeHomeConfiguration hostname host))
+      bladeHosts;
+
     # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwinConfigurations."${hostname}".pkgs;
+    darwinPackages = self.darwinConfigurations."${darwinHostname}".pkgs;
   };
 }
