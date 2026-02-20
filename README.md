@@ -24,9 +24,10 @@ The blade hosts intentionally avoid macOS-only settings/apps.
 
 ## Layout
 
-- `flake.nix`: host inventory and output wiring
+- `hosts/`: host inventory and per-host Home Manager modules
+- `flake.nix`: output wiring
 - `modules/`: `nix-darwin` system modules (macOS only)
-- `home/default.nix`: shared + platform-specific Home Manager imports
+- `home/default.nix`: shared Home Manager imports
 - `home/core.nix`: Darwin user packages
 - `home/core-linux.nix`: Linux blade package profile
 - `home/linux.nix`: Home Manager settings for non-NixOS Linux (`targets.genericLinux`)

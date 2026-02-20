@@ -43,24 +43,7 @@
 
     nixvimModule = nixvim.homeModules.nixvim;
 
-    hosts = {
-      "${darwinHostname}" = {
-        kind = "darwin";
-        system = "aarch64-darwin";
-      };
-      blade-1 = {
-        kind = "blade";
-        system = "aarch64-linux";
-      };
-      blade-2 = {
-        kind = "blade";
-        system = "aarch64-linux";
-      };
-      blade-3 = {
-        kind = "blade";
-        system = "aarch64-linux";
-      };
-    };
+    hosts = import ./hosts;
 
     bladeHosts = lib.filterAttrs (_: host: host.kind == "blade") hosts;
     darwinHost = hosts.${darwinHostname};
@@ -77,6 +60,13 @@
 
     darwinSpecialArgs = mkSpecialArgs darwinHostname darwinHost;
 
+    mkHomeModules = host:
+      [
+        ./home
+        nixvimModule
+      ]
+      ++ lib.optionals (host ? homeModule) [host.homeModule];
+
     mkBladeHomeConfiguration = hostname: host: let
       pkgs = import nixpkgs {
         system = host.system;
@@ -87,13 +77,13 @@
       home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = specialArgs;
-        modules = [
-          ./home
-          nixvimModule
-          {
-            home.homeDirectory = "/home/${username}";
-          }
-        ];
+        modules =
+          mkHomeModules host
+          ++ [
+            {
+              home.homeDirectory = "/home/${username}";
+            }
+          ];
       };
   in {
     # Build darwin flake using:
@@ -118,15 +108,9 @@
             useUserPackages = true;
             extraSpecialArgs = darwinSpecialArgs;
             users.${username} = {
-              config,
-              lib,
-              pkgs,
               ...
             }: {
-              imports = [
-                ./home
-                nixvimModule
-              ];
+              imports = mkHomeModules darwinHost;
             };
           };
         }
