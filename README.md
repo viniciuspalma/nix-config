@@ -108,9 +108,13 @@ just fan-install-all
 Useful commands:
 
 ```bash
+just --set blade_hostname blade-1 blade-sync
+just --set blade_hostname blade-1 fan-boost
+just --set blade_hostname blade-1 fan-stop
 just --set blade_hostname blade-1 fan-status
 just --set blade_hostname blade-1 fan-logs
 just --set blade_hostname blade-1 fan-read-rpm
+just --set blade_hostname blade-1 fan-start
 just --set blade_hostname blade-1 --set fan_profile ease_out fan-profile
 ```
 
@@ -122,10 +126,20 @@ What `fan-install` does:
 4. Installs `home/fan/fan-control.service` to `/etc/systemd/system/fan-control.service`.
 5. Enables and starts the service.
 
+Default tuning in `home/fan/fan_control.py` is intentionally aggressive:
+
+- `OFF_TEMP=35`
+- `MIN_TEMP=40`
+- `MAX_TEMP=60`
+- minimum running duty `35%` when fan is on
+
 Hardware note:
 
 - Only the blade in Port A/J1 can drive PWM fan speed.
 - Other blades can read tach RPM only.
+- If `fan-control.service` is running on a host, `fan-read-rpm` on that same host may fail with `GPIO busy`.
+  - Either run `fan-read-rpm` from another blade.
+  - Or stop/start control service around RPM reads: `fan-stop` -> `fan-read-rpm` -> `fan-start`.
 
 ## General Notes
 

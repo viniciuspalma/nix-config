@@ -37,6 +37,6 @@ try:
         if interval > 0:
             rpm = (pulses / PULSES_PER_REVOLUTION) * (60 / interval)
 
-        print(f"{rpm:.0f} RPM")
+        print(f"{rpm:.0f} RPM", flush=True)
 except KeyboardInterrupt:
     raise SystemExit(0)

@@ -14,9 +14,12 @@ PWM_PIN = 12
 TACH_PIN = 13
 WAIT_TIME = 1
 
-OFF_TEMP = 40
-MIN_TEMP = 45
-MAX_TEMP = 70
+# Aggressive default thermal curve for blades: start earlier and reach full
+# speed sooner.
+OFF_TEMP = 35
+MIN_TEMP = 40
+MAX_TEMP = 60
+MIN_RUNNING_DUTY = 0.35
 
 FAN_PROFILE_PATH = "/etc/fan-control/profile"
 
@@ -188,7 +191,9 @@ def pwm_for_temperature(temperature: float, curve_fn) -> float:
     if temperature < MIN_TEMP:
         return 0.0
     progress = normalize_temperature(temperature)
-    return clamp_speed(curve_fn(progress))
+    speed = clamp_speed(curve_fn(progress))
+    # Avoid very low duty cycles that can under-cool under sustained load.
+    return max(MIN_RUNNING_DUTY, speed)
 
 
 def handle_fan_speed(fan_device: PWMOutputDevice, temperature: float, curve_fn):

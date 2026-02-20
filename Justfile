@@ -3,7 +3,7 @@
 darwin_hostname := "ch-CQTMGK70R5"
 blade_hostname := "blade-1"
 blade_user := "vinicius.palma"
-fan_profile := "linear"
+fan_profile := "ease_out"
 
 ############################################################################
 #
@@ -73,6 +73,16 @@ fan-profile:
   ssh {{blade_user}}@{{blade_hostname}} "echo {{fan_profile}} | sudo tee /etc/fan-control/profile >/dev/null"
   ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl restart fan-control.service'
 
+fan-boost:
+  ssh {{blade_user}}@{{blade_hostname}} "echo ease_out | sudo tee /etc/fan-control/profile >/dev/null"
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl restart fan-control.service'
+
+fan-start:
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl start fan-control.service'
+
+fan-stop:
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl stop fan-control.service'
+
 fan-status:
   ssh {{blade_user}}@{{blade_hostname}} 'sudo systemctl status fan-control.service --no-pager'
 
@@ -80,7 +90,7 @@ fan-logs:
   ssh {{blade_user}}@{{blade_hostname}} 'sudo journalctl -u fan-control.service -n 100 --no-pager'
 
 fan-read-rpm:
-  ssh {{blade_user}}@{{blade_hostname}} 'sudo python3 ~/.config/nix-config/home/fan/read_fan_speed.py'
+  ssh {{blade_user}}@{{blade_hostname}} 'sudo python3 -u ~/.config/nix-config/home/fan/read_fan_speed.py'
 
 fan-install-all:
   for host in blade-1 blade-2 blade-3; do \
