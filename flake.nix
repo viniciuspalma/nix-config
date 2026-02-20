@@ -113,9 +113,7 @@
               useGlobalPkgs = true;
               useUserPackages = true;
               extraSpecialArgs = specialArgs;
-              users.${username} = {
-                ...
-              }: {
+              users.${username} = {...}: {
                 imports = mkHomeModules host;
               };
             };
@@ -144,9 +142,7 @@
             useGlobalPkgs = true;
             useUserPackages = true;
             extraSpecialArgs = darwinSpecialArgs;
-            users.${username} = {
-              ...
-            }: {
+            users.${username} = {...}: {
               imports = mkHomeModules darwinHost;
             };
           };

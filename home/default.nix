@@ -1,7 +1,4 @@
-{
-  username,
-  ...
-}: let
+{username, ...}: let
   sharedImports = [
     ./git.nix
     ./go.nix
