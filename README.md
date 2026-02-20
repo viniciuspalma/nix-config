@@ -28,6 +28,7 @@ The blade hosts intentionally avoid macOS-only settings/apps.
 
 - `hosts/`: host inventory and per-host Home Manager modules
 - `nixos/blades/shared/`: shared NixOS modules for blade nodes (base, nix, users, network, disks)
+- `docs/`: operational runbooks (sanitized; no credentials)
 - `flake.nix`: output wiring
 - `modules/`: `nix-darwin` system modules (macOS only)
 - `home/default.nix`: shared Home Manager imports
@@ -165,3 +166,4 @@ Hardware note:
 - `path:.#...` is used so local changes are evaluated even before `git add`.
 - Blade networking is DHCP-first in this setup.
 - Keep shared blade settings in `nixos/blades/shared/` and override per-host only when needed.
+- USB recovery runbook for blade-1: `docs/blade-1-usb-recovery-runbook.md`

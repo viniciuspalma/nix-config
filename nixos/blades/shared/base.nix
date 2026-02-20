@@ -12,11 +12,12 @@
 
   services.openssh = {
     enable = true;
+    openFirewall = true;
     settings = {
-      # Keep password auth enabled during migration; tighten later per-host.
-      PasswordAuthentication = lib.mkDefault true;
-      KbdInteractiveAuthentication = lib.mkDefault true;
-      PermitRootLogin = lib.mkDefault "no";
+      # Temporary for USB recovery flow; switch back to key-only after first login.
+      PasswordAuthentication = true;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "prohibit-password";
     };
   };
 
