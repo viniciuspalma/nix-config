@@ -1,7 +1,8 @@
 # just is a command runner, Justfile is very similar to Makefile, but simpler.
 
 darwin_hostname := "ch-CQTMGK70R5"
-blade_hostname := "blade-1"
+blade_hostname := "blade-2"
+nixos_blade_hostname := "blade-1"
 blade_user := "vinicius.palma"
 fan_profile := "ease_out"
 
@@ -48,9 +49,19 @@ blade-switch: blade-sync
   ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#{{blade_user}}@{{blade_hostname}}'"
 
 blade-switch-all:
-  for host in blade-1 blade-2 blade-3; do \
+  for host in blade-2 blade-3; do \
     just --set blade_hostname "$host" blade-switch; \
   done
+
+############################################################################
+#
+#  Blade-1 related commands (NixOS pilot)
+#
+############################################################################
+
+blade-nixos-build:
+  nix build 'path:.#nixosConfigurations.{{nixos_blade_hostname}}.config.system.build.toplevel' \
+    --extra-experimental-features 'nix-command flakes'
 
 ############################################################################
 #
@@ -93,7 +104,7 @@ fan-read-rpm:
   ssh {{blade_user}}@{{blade_hostname}} 'sudo python3 -u ~/.config/nix-config/home/fan/read_fan_speed.py'
 
 fan-install-all:
-  for host in blade-1 blade-2 blade-3; do \
+  for host in blade-2 blade-3; do \
     just --set blade_hostname "$host" fan-install; \
   done
 

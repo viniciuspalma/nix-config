@@ -1,4 +1,8 @@
-{...}: {
-  # Enable Home Manager integration for non-NixOS Linux distributions.
-  targets.genericLinux.enable = true;
+{
+  lib,
+  isNixOS ? false,
+  ...
+}: {
+  # Enable Home Manager integration only for non-NixOS Linux distributions.
+  targets.genericLinux.enable = lib.mkDefault (!isNixOS);
 }

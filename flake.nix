@@ -1,5 +1,5 @@
 {
-  description = "Configuration for macOS and Ubuntu blades";
+  description = "Configuration for macOS, NixOS, and Ubuntu blades";
 
   inputs = {
     nixpkgs = {
@@ -45,7 +45,18 @@
 
     hosts = import ./hosts;
 
+    hostDeployment = host:
+      if host ? deployment
+      then host.deployment
+      else if host.kind == "darwin"
+      then "darwin"
+      else "home-manager";
+
     bladeHosts = lib.filterAttrs (_: host: host.kind == "blade") hosts;
+    standaloneBladeHosts =
+      lib.filterAttrs (_: host: hostDeployment host == "home-manager") bladeHosts;
+    nixosBladeHosts =
+      lib.filterAttrs (_: host: hostDeployment host == "nixos") bladeHosts;
     darwinHost = hosts.${darwinHostname};
 
     mkSpecialArgs = hostname: host:
@@ -56,6 +67,7 @@
         isBlade = host.kind == "blade";
         isDarwin = host.kind == "darwin";
         isLinux = host.kind != "darwin";
+        isNixOS = hostDeployment host == "nixos";
       };
 
     darwinSpecialArgs = mkSpecialArgs darwinHostname darwinHost;
@@ -84,6 +96,31 @@
               home.homeDirectory = "/home/${username}";
             }
           ];
+      };
+
+    mkBladeNixosConfiguration = hostname: host: let
+      specialArgs = mkSpecialArgs hostname host;
+    in
+      nixpkgs.lib.nixosSystem {
+        system = host.system;
+        specialArgs = specialArgs;
+        modules = [
+          ./nixos/blades/shared
+          host.nixosModule
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = specialArgs;
+              users.${username} = {
+                ...
+              }: {
+                imports = mkHomeModules host;
+              };
+            };
+          }
+        ];
       };
   in {
     # Build darwin flake using:
@@ -121,7 +158,9 @@
       lib.mapAttrs'
       (hostname: host:
         lib.nameValuePair "${username}@${hostname}" (mkBladeHomeConfiguration hostname host))
-      bladeHosts;
+      standaloneBladeHosts;
+
+    nixosConfigurations = lib.mapAttrs mkBladeNixosConfiguration nixosBladeHosts;
 
     # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations."${darwinHostname}".pkgs;
