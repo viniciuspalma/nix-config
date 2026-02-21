@@ -53,7 +53,7 @@ forbidden_paths = [
     "~/.config",
 ]
 max_actions_per_hour = 20
-max_cost_per_day_cents = 500
+max_cost_per_day_cents = 50000
 require_approval_for_medium_risk = true
 block_high_risk_commands = true
 shell_env_passthrough = []
@@ -197,7 +197,7 @@ allow_remote_endpoint = false
 window_allowlist = []
 
 [http_request]
-enabled = false
+enabled = true
 allowed_domains = []
 max_response_size = 1000000
 timeout_secs = 30
@@ -208,7 +208,7 @@ max_image_size_mb = 5
 allow_remote_fetch = false
 
 [web_search]
-enabled = false
+enabled = true 
 provider = "duckduckgo"
 max_results = 5
 timeout_secs = 15
