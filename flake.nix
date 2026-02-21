@@ -166,6 +166,10 @@
               '';
             };
 
+            # Keep recovery SSH reachable even if service/firewall defaults
+            # change in shared modules.
+            networking.firewall.enable = lib.mkForce false;
+
             # The sd-image module enables a generic "all hardware" initrd
             # profile that includes modules missing from linux-rpi (e.g.
             # dw-hdmi). Keep this recovery image focused on CM4+NVMe boot.
