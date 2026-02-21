@@ -132,6 +132,64 @@
           }
         ];
       };
+
+    mkBladeRecoveryImageConfiguration = hostname: host: let
+      specialArgs = mkSpecialArgs hostname host;
+    in
+      nixpkgs.lib.nixosSystem {
+        system = host.system;
+        specialArgs = specialArgs;
+        modules = [
+          ./nixos/blades/shared
+          host.nixosModule
+          "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
+          {
+            # Build a recovery image with a larger firmware partition so
+            # extlinux + firmware artifacts fit reliably on CM4.
+            sdImage = {
+              firmwareSize = 512;
+              firmwarePartitionName = "system-boot";
+              rootVolumeLabel = "writable";
+            };
+
+            # The sd-image module enables a generic "all hardware" initrd
+            # profile that includes modules missing from linux-rpi (e.g.
+            # dw-hdmi). Keep this recovery image focused on CM4+NVMe boot.
+            hardware.enableAllHardware = lib.mkForce false;
+            boot.initrd.availableKernelModules = lib.mkForce [
+              "nvme"
+              "pcie-brcmstb"
+              "mmc_block"
+              "usbhid"
+              "usb_storage"
+              "xhci-pci"
+              "xhci-hcd"
+              "xhci-plat-hcd"
+              "xhci-pci-renesas"
+            ];
+
+            fileSystems."/boot/firmware" = {
+              device = lib.mkForce "/dev/disk/by-label/system-boot";
+              fsType = lib.mkForce "vfat";
+              options = lib.mkForce [
+                "fmask=0077"
+                "dmask=0077"
+              ];
+            };
+          }
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = specialArgs;
+              users.${username} = {...}: {
+                imports = mkHomeModules host;
+              };
+            };
+          }
+        ];
+      };
   in {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#Viniciuss-MacBook-Pro
@@ -168,7 +226,11 @@
         lib.nameValuePair "${username}@${hostname}" (mkBladeHomeConfiguration hostname host))
       standaloneBladeHosts;
 
-    nixosConfigurations = lib.mapAttrs mkBladeNixosConfiguration nixosBladeHosts;
+    nixosConfigurations =
+      (lib.mapAttrs mkBladeNixosConfiguration nixosBladeHosts)
+      // {
+        blade-1-recovery = mkBladeRecoveryImageConfiguration "blade-1" hosts.blade-1;
+      };
 
     # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations."${darwinHostname}".pkgs;
