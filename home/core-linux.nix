@@ -26,6 +26,7 @@
     socat
     nmap
     htop
+    _1password-cli
     ffmpeg
     cowsay
     file

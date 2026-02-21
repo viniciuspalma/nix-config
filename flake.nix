@@ -21,6 +21,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
     };
@@ -32,6 +37,7 @@
     nixpkgs,
     nixvim,
     home-manager,
+    disko,
     nix-vscode-extensions,
     ...
   }: let
@@ -107,6 +113,12 @@
         modules = [
           ./nixos/blades/shared
           host.nixosModule
+        ]
+        ++ lib.optionals (host ? diskoModule) [
+          disko.nixosModules.disko
+          host.diskoModule
+        ]
+        ++ [
           home-manager.nixosModules.home-manager
           {
             home-manager = {

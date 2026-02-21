@@ -6,6 +6,7 @@
   # Existing key currently present on blade hosts (managed in 1Password).
   sshKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICf3+Pnj8acqkAAJNK0WVQrJ/5rIomxxi4U6rCRpIK+v"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGwafwyM4cRJuTNkEKCn6onqh8mD7wYcq4abZcAdbXTw"
   ];
 in {
   security.sudo.wheelNeedsPassword = false;

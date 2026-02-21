@@ -3,10 +3,13 @@
   pkgs,
   ...
 }: {
+  home-manager.backupFileExtension = "hm-backup";
+
   # Raspberry Pi boot loader options were removed in recent nixpkgs.
   # Keep extlinux on the firmware partition and provision Pi firmware/U-Boot explicitly.
   boot.loader.grub.enable = lib.mkForce false;
   boot.loader.generic-extlinux-compatible.enable = true;
+  boot.loader.generic-extlinux-compatible.configurationLimit = 3;
   boot.loader.generic-extlinux-compatible.mirroredBoots = [
     {
       path = "/boot/firmware";
