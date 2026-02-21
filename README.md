@@ -108,6 +108,24 @@ For the NixOS pilot (`blade-1`):
 just blade-nixos-build
 ```
 
+## Zeroclaw on Blade-2 / Blade-3
+
+`zeroclaw` is built from upstream source (`github:zeroclaw-labs/zeroclaw`) by this flake and included in the Home Manager profiles for `blade-2` and `blade-3`.
+
+Build from source on a blade:
+
+```bash
+just --set blade_hostname blade-2 blade-zeroclaw-build
+just --set blade_hostname blade-3 blade-zeroclaw-build
+```
+
+Run on a blade:
+
+```bash
+just --set blade_hostname blade-2 blade-zeroclaw-run
+just --set blade_hostname blade-3 blade-zeroclaw-run
+```
+
 ## Blade Fan Control (Ubuntu blades, script-only; outside Nix)
 
 The fan setup is intentionally kept out of Home Manager/Nix builds on blades.

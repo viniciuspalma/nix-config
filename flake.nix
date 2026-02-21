@@ -29,6 +29,11 @@
     nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
     };
+
+    zeroclawSrc = {
+      url = "github:zeroclaw-labs/zeroclaw?ref=main";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {
@@ -39,6 +44,7 @@
     home-manager,
     disko,
     nix-vscode-extensions,
+    zeroclawSrc,
     ...
   }: let
     lib = nixpkgs.lib;
@@ -143,13 +149,21 @@
           ./nixos/blades/shared
           host.nixosModule
           "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-          {
+          ({config, ...}: {
             # Build a recovery image with a larger firmware partition so
             # extlinux + firmware artifacts fit reliably on CM4.
             sdImage = {
               firmwareSize = 512;
               firmwarePartitionName = "system-boot";
               rootVolumeLabel = "writable";
+              # Ensure the generated image already contains extlinux + nixos
+              # entries on the firmware FAT so CM4 can boot without a prior
+              # activation step.
+              populateFirmwareCommands = lib.mkAfter ''
+                ${config.boot.loader.generic-extlinux-compatible.populateCmd} \
+                  -c ${config.system.build.toplevel} \
+                  -d firmware
+              '';
             };
 
             # The sd-image module enables a generic "all hardware" initrd
@@ -176,7 +190,7 @@
                 "dmask=0077"
               ];
             };
-          }
+          })
           home-manager.nixosModules.home-manager
           {
             home-manager = {
@@ -189,6 +203,43 @@
             };
           }
         ];
+      };
+
+    zeroclawSystems = ["aarch64-linux"];
+
+    mkZeroclawPackage = system: let
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+    in
+      pkgs.rustPlatform.buildRustPackage {
+        pname = "zeroclaw";
+        version = "unstable-main";
+        src = zeroclawSrc;
+
+        cargoLock = {
+          lockFile = "${zeroclawSrc}/Cargo.lock";
+        };
+
+        nativeBuildInputs = with pkgs; [
+          pkg-config
+        ];
+
+        buildInputs = with pkgs;
+          lib.optionals stdenv.hostPlatform.isLinux [
+            openssl
+          ];
+
+        doCheck = false;
+
+        meta = with lib; {
+          description = "Open source AI coding agent for software engineering tasks";
+          homepage = "https://github.com/zeroclaw-labs/zeroclaw";
+          license = licenses.mit;
+          mainProgram = "zeroclaw";
+          platforms = platforms.linux;
+        };
       };
   in {
     # Build darwin flake using:
@@ -231,6 +282,26 @@
       // {
         blade-1-recovery = mkBladeRecoveryImageConfiguration "blade-1" hosts.blade-1;
       };
+
+    packages = lib.genAttrs zeroclawSystems (system: let
+      zeroclaw = mkZeroclawPackage system;
+    in {
+      inherit zeroclaw;
+      default = zeroclaw;
+    });
+
+    apps = lib.genAttrs zeroclawSystems (system: let
+      program = "${self.packages.${system}.zeroclaw}/bin/zeroclaw";
+    in {
+      zeroclaw = {
+        type = "app";
+        inherit program;
+      };
+      default = {
+        type = "app";
+        inherit program;
+      };
+    });
 
     # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations."${darwinHostname}".pkgs;

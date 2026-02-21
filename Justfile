@@ -53,6 +53,12 @@ blade-switch-all:
     just --set blade_hostname "$host" blade-switch; \
   done
 
+blade-zeroclaw-build: blade-sync
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix build 'path:.#packages.aarch64-linux.zeroclaw' --extra-experimental-features 'nix-command flakes'"
+
+blade-zeroclaw-run: blade-sync
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix run 'path:.#zeroclaw' -- --help"
+
 ############################################################################
 #
 #  Blade-1 related commands (NixOS pilot)
