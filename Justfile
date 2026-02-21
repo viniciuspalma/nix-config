@@ -4,6 +4,10 @@ darwin_hostname := "ch-CQTMGK70R5"
 blade_hostname := "blade-2"
 blade_user := "vinicius.palma"
 fan_profile := "ease_out"
+op_account := "my.1password.com"
+op_environment := "gbzbzblosaqcyxr2bg7bd7ewna"
+blade_nix_bin := "/nix/var/nix/profiles/default/bin/nix"
+blade_nix_bin_dir := "/nix/var/nix/profiles/default/bin"
 
 ############################################################################
 #
@@ -44,19 +48,32 @@ blade-sync:
     --exclude 'result/' \
     ./ {{blade_user}}@{{blade_hostname}}:~/.config/nix-config/
 
-blade-switch: blade-sync
-  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#{{blade_user}}@{{blade_hostname}}'"
+blade-sync-zeroclaw-secret:
+  if [ -z "${DISCORD_BOT_TOKEN:-}" ]; then \
+    echo "ERROR: missing DISCORD_BOT_TOKEN in environment."; \
+    exit 1; \
+  fi
+  printf '%s' "$DISCORD_BOT_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/discord_bot_token'
+
+blade-switch: blade-sync blade-sync-zeroclaw-secret
+  ssh {{blade_user}}@{{blade_hostname}} "export PATH={{blade_nix_bin_dir}}:\$PATH; cd ~/.config/nix-config && {{blade_nix_bin}} run home-manager/master -- switch --flake 'path:.#{{blade_user}}@{{blade_hostname}}'"
 
 blade-switch-all:
   for host in blade-2 blade-3; do \
     just --set blade_hostname "$host" blade-switch; \
   done
 
+blade-switch-op:
+  op run --account {{op_account}} --environment {{op_environment}} -- just --set blade_hostname "{{blade_hostname}}" blade-switch
+
+blade-switch-all-op:
+  op run --account {{op_account}} --environment {{op_environment}} -- just blade-switch-all
+
 blade-zeroclaw-build: blade-sync
-  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix build 'path:.#packages.aarch64-linux.zeroclaw' --extra-experimental-features 'nix-command flakes'"
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && {{blade_nix_bin}} build 'path:.#packages.aarch64-linux.zeroclaw' --extra-experimental-features 'nix-command flakes'"
 
 blade-zeroclaw-run: blade-sync
-  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix run 'path:.#zeroclaw' -- --help"
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && {{blade_nix_bin}} run 'path:.#zeroclaw' -- --help"
 
 ############################################################################
 #

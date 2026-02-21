@@ -53,6 +53,7 @@
       "google-chrome"
       "zen"
       "1password"
+      "1password-cli@beta"
       "wifiman"
 
       # IM & audio & remote desktop & meeting

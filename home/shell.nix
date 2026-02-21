@@ -26,10 +26,31 @@
         "gcloud"
         "docker"
         "kubectl"
-        "direnv"
       ];
     };
   };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
+  # Blade users currently log in with bash. Ensure `cd` triggers direnv there too.
+  home.activation.direnvBashHook = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    set -euo pipefail
+
+    bashrc="$HOME/.bashrc"
+    hook='eval "$(${pkgs.direnv}/bin/direnv hook bash)"'
+
+    if [ ! -f "$bashrc" ]; then
+      ${pkgs.coreutils}/bin/touch "$bashrc"
+    fi
+
+    if ! ${pkgs.gnugrep}/bin/grep -Fqx "$hook" "$bashrc"; then
+      printf '\n# Added by Home Manager for direnv\n%s\n' "$hook" >> "$bashrc"
+    fi
+  '';
 
   home.sessionVariables =
     {
@@ -48,6 +69,7 @@
       "/opt/homebrew/bin"
     ]
     ++ lib.optionals pkgs.stdenv.isLinux [
+      "/nix/var/nix/profiles/default/bin"
       "${config.home.homeDirectory}/.local/bin"
     ];
 

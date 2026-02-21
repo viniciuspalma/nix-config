@@ -3,10 +3,13 @@
   lib,
   ...
 }: {
-  home.packages = with pkgs; [
-    _1password-cli
-    gh
-  ];
+  home.packages =
+    (lib.optionals pkgs.stdenv.isLinux (with pkgs; [
+      _1password-cli
+    ]))
+    ++ (with pkgs; [
+      gh
+    ]);
 
   programs.zsh.envExtra = ''
     # For 1Password CLI. This requires `pkgs.gh` to be installed.
