@@ -15,12 +15,21 @@ runtime_trace_path = "state/runtime-trace.jsonl"
 runtime_trace_max_entries = 200
 
 [autonomy]
-level = "supervised"
-workspace_only = true
+level = "full"
+workspace_only = false
 allowed_commands = [
+    "bash",
+    "sh",
+    "zsh",
+    "env",
+    "ssh",
+    "ssh-keygen",
+    "ssh-add",
+    "ssh-agent",
     "git",
-    "npm",
-    "cargo",
+    "nix",
+    "home-manager",
+    "just",
     "ls",
     "cat",
     "grep",
@@ -32,37 +41,18 @@ allowed_commands = [
     "tail",
     "date",
 ]
-forbidden_paths = [
-    "/etc",
-    "/root",
-    "/home",
-    "/usr",
-    "/bin",
-    "/sbin",
-    "/lib",
-    "/opt",
-    "/boot",
-    "/dev",
-    "/proc",
-    "/sys",
-    "/var",
-    "/tmp",
-    "~/.ssh",
-    "~/.gnupg",
-    "~/.aws",
-    "~/.config",
-]
-max_actions_per_hour = 20
-max_cost_per_day_cents = 50000
-require_approval_for_medium_risk = true
-block_high_risk_commands = true
+forbidden_paths = []
+max_actions_per_hour = 2000
+max_cost_per_day_cents = 10000
+require_approval_for_medium_risk = false
+block_high_risk_commands = false
 shell_env_passthrough = []
 auto_approve = [
     "file_read",
     "memory_recall",
 ]
 always_ask = []
-allowed_roots = []
+allowed_roots = ["/"]
 non_cli_excluded_tools = []
 
 [runtime]
@@ -96,7 +86,7 @@ max_concurrent = 4
 
 [agent]
 compact_context = false
-max_tool_iterations = 10
+max_tool_iterations = 100
 max_history_messages = 50
 parallel_tools = false
 tool_dispatcher = "auto"
@@ -131,7 +121,7 @@ allowed_users = [
     "492830492379316254",
 ]
 listen_to_bots = false
-mention_only = false
+mention_only = true
 
 [memory]
 backend = "sqlite"
