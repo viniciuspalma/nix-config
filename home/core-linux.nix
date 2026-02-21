@@ -37,6 +37,9 @@
     copier
     mkcert
     lazygit
+    gnumake
+    pkg-config
+    gcc
 
     # languages
     go

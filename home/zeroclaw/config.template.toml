@@ -2,7 +2,7 @@
 # Sensitive values are redacted; keep secrets in local host config only.
 
 api_key = "<REDACTED>"
-default_provider = "openai"
+default_provider = "openai-codex"
 default_model = "gpt-5.3-codex"
 default_temperature = 0.7
 model_routes = []
@@ -10,13 +10,13 @@ embedding_routes = []
 
 [observability]
 backend = "none"
-runtime_trace_mode = "none"
+runtime_trace_mode = "rolling"
 runtime_trace_path = "state/runtime-trace.jsonl"
 runtime_trace_max_entries = 200
 
 [autonomy]
 level = "full"
-workspace_only = false
+workspace_only = true
 allowed_commands = [
     "bash",
     "sh",
@@ -47,10 +47,6 @@ max_cost_per_day_cents = 10000
 require_approval_for_medium_risk = false
 block_high_risk_commands = false
 shell_env_passthrough = []
-auto_approve = [
-    "file_read",
-    "memory_recall",
-]
 always_ask = []
 allowed_roots = ["/"]
 non_cli_excluded_tools = []
@@ -71,7 +67,7 @@ allowed_workspace_roots = []
 provider_retries = 2
 provider_backoff_ms = 500
 fallback_providers = []
-api_keys = "<REDACTED>"
+api_keys = []
 channel_initial_backoff_secs = 2
 channel_max_backoff_secs = 60
 scheduler_poll_secs = 15
@@ -121,7 +117,7 @@ allowed_users = [
     "492830492379316254",
 ]
 listen_to_bots = false
-mention_only = true
+mention_only = false
 
 [memory]
 backend = "sqlite"
@@ -158,7 +154,7 @@ port = 42617
 host = "127.0.0.1"
 require_pairing = true
 allow_public_bind = false
-paired_tokens = "<REDACTED>"
+paired_tokens = []
 pair_rate_limit_per_minute = 10
 webhook_rate_limit_per_minute = 60
 trust_forwarded_headers = false
