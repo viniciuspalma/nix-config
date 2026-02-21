@@ -1,8 +1,6 @@
 {
   kind = "blade";
-  deployment = "nixos";
+  deployment = "home-manager";
   system = "aarch64-linux";
   homeModule = ./home.nix;
-  nixosModule = ./nixos.nix;
-  diskoModule = ./disko.nix;
 }

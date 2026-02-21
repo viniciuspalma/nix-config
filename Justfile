@@ -2,7 +2,6 @@
 
 darwin_hostname := "ch-CQTMGK70R5"
 blade_hostname := "blade-2"
-nixos_blade_hostname := "blade-1"
 blade_user := "vinicius.palma"
 fan_profile := "ease_out"
 
@@ -58,16 +57,6 @@ blade-zeroclaw-build: blade-sync
 
 blade-zeroclaw-run: blade-sync
   ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && nix run 'path:.#zeroclaw' -- --help"
-
-############################################################################
-#
-#  Blade-1 related commands (NixOS pilot)
-#
-############################################################################
-
-blade-nixos-build:
-  nix build 'path:.#nixosConfigurations.{{nixos_blade_hostname}}.config.system.build.toplevel' \
-    --extra-experimental-features 'nix-command flakes'
 
 ############################################################################
 #

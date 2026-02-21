@@ -1,5 +1,5 @@
 {
-  description = "Configuration for macOS, NixOS, and Ubuntu blades";
+  description = "Configuration for macOS and Linux blades";
 
   inputs = {
     nixpkgs = {
@@ -21,11 +21,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
     };
@@ -42,7 +37,6 @@
     nixpkgs,
     nixvim,
     home-manager,
-    disko,
     nix-vscode-extensions,
     zeroclawSrc,
     ...
@@ -67,8 +61,6 @@
     bladeHosts = lib.filterAttrs (_: host: host.kind == "blade") hosts;
     standaloneBladeHosts =
       lib.filterAttrs (_: host: hostDeployment host == "home-manager") bladeHosts;
-    nixosBladeHosts =
-      lib.filterAttrs (_: host: hostDeployment host == "nixos") bladeHosts;
     darwinHost = hosts.${darwinHostname};
 
     mkSpecialArgs = hostname: host:
@@ -108,105 +100,6 @@
               home.homeDirectory = "/home/${username}";
             }
           ];
-      };
-
-    mkBladeNixosConfiguration = hostname: host: let
-      specialArgs = mkSpecialArgs hostname host;
-    in
-      nixpkgs.lib.nixosSystem {
-        system = host.system;
-        specialArgs = specialArgs;
-        modules = [
-          ./nixos/blades/shared
-          host.nixosModule
-        ]
-        ++ lib.optionals (host ? diskoModule) [
-          disko.nixosModules.disko
-          host.diskoModule
-        ]
-        ++ [
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              extraSpecialArgs = specialArgs;
-              users.${username} = {...}: {
-                imports = mkHomeModules host;
-              };
-            };
-          }
-        ];
-      };
-
-    mkBladeRecoveryImageConfiguration = hostname: host: let
-      specialArgs = mkSpecialArgs hostname host;
-    in
-      nixpkgs.lib.nixosSystem {
-        system = host.system;
-        specialArgs = specialArgs;
-        modules = [
-          ./nixos/blades/shared
-          host.nixosModule
-          "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-          ({config, ...}: {
-            # Build a recovery image with a larger firmware partition so
-            # extlinux + firmware artifacts fit reliably on CM4.
-            sdImage = {
-              firmwareSize = 512;
-              firmwarePartitionName = "system-boot";
-              rootVolumeLabel = "writable";
-              # Ensure the generated image already contains extlinux + nixos
-              # entries on the firmware FAT so CM4 can boot without a prior
-              # activation step.
-              populateFirmwareCommands = lib.mkAfter ''
-                ${config.boot.loader.generic-extlinux-compatible.populateCmd} \
-                  -c ${config.system.build.toplevel} \
-                  -d firmware
-              '';
-            };
-
-            # Keep recovery SSH reachable even if service/firewall defaults
-            # change in shared modules.
-            networking.firewall.enable = lib.mkForce false;
-
-            # The sd-image module enables a generic "all hardware" initrd
-            # profile that includes modules missing from linux-rpi (e.g.
-            # dw-hdmi). Keep this recovery image focused on CM4+NVMe boot.
-            hardware.enableAllHardware = lib.mkForce false;
-            boot.initrd.availableKernelModules = lib.mkForce [
-              "nvme"
-              "pcie-brcmstb"
-              "mmc_block"
-              "usbhid"
-              "usb_storage"
-              "xhci-pci"
-              "xhci-hcd"
-              "xhci-plat-hcd"
-              "xhci-pci-renesas"
-            ];
-
-            fileSystems."/boot/firmware" = {
-              device = lib.mkForce "/dev/disk/by-label/system-boot";
-              fsType = lib.mkForce "vfat";
-              options = lib.mkForce [
-                "fmask=0077"
-                "dmask=0077"
-              ];
-            };
-          })
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              extraSpecialArgs = specialArgs;
-              users.${username} = {...}: {
-                imports = mkHomeModules host;
-              };
-            };
-          }
-        ];
       };
 
     zeroclawSystems = ["aarch64-linux"];
@@ -280,12 +173,6 @@
       (hostname: host:
         lib.nameValuePair "${username}@${hostname}" (mkBladeHomeConfiguration hostname host))
       standaloneBladeHosts;
-
-    nixosConfigurations =
-      (lib.mapAttrs mkBladeNixosConfiguration nixosBladeHosts)
-      // {
-        blade-1-recovery = mkBladeRecoveryImageConfiguration "blade-1" hosts.blade-1;
-      };
 
     packages = lib.genAttrs zeroclawSystems (system: let
       zeroclaw = mkZeroclawPackage system;

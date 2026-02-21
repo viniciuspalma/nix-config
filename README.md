@@ -3,8 +3,7 @@
 This repository manages:
 
 - `ch-CQTMGK70R5` as `nix-darwin` (`aarch64-darwin`)
-- `blade-1` as NixOS pilot (`aarch64-linux`)
-- `blade-2`, `blade-3` as Ubuntu hosts with standalone Home Manager (`aarch64-linux`)
+- `blade-1`, `blade-2`, `blade-3` as Ubuntu hosts with standalone Home Manager (`aarch64-linux`)
 
 The blade hosts intentionally avoid macOS-only settings/apps.
 
@@ -12,22 +11,19 @@ The blade hosts intentionally avoid macOS-only settings/apps.
 
 - Darwin system:
   - `darwinConfigurations."ch-CQTMGK70R5"`
-- Blade NixOS system:
-  - `nixosConfigurations.blade-1`
 - Blade Home Manager profiles (Ubuntu blades):
+  - `homeConfigurations."vinicius.palma@blade-1"`
   - `homeConfigurations."vinicius.palma@blade-2"`
   - `homeConfigurations."vinicius.palma@blade-3"`
 
 ## Which rebuild command to use
 
-- `nixos-rebuild`: only for NixOS (`nixosConfigurations`), not used by these Ubuntu blades
 - `darwin-rebuild`: for macOS host (`darwinConfigurations`)
 - `home-manager switch`: for Ubuntu blades (`homeConfigurations`)
 
 ## Layout
 
 - `hosts/`: host inventory and per-host Home Manager modules
-- `nixos/blades/shared/`: shared NixOS modules for blade nodes (base, nix, users, network, disks)
 - `docs/`: operational runbooks (sanitized; no credentials)
 - `flake.nix`: output wiring
 - `modules/`: `nix-darwin` system modules (macOS only)
@@ -52,7 +48,7 @@ Or use:
 just darwin
 ```
 
-## Bootstrap Ubuntu Blades (blade-2/blade-3)
+## Bootstrap Ubuntu Blades (blade-1/blade-2/blade-3)
 
 Run on each blade host (replace hostname accordingly):
 
@@ -63,17 +59,7 @@ cd ~/.config/nix-config
 nix run home-manager/master -- switch --flake 'path:.#vinicius.palma@blade-2'
 ```
 
-Repeat with `blade-3`.
-
-## Build NixOS for blade-1 (pilot)
-
-```bash
-nix build 'path:.#nixosConfigurations.blade-1.config.system.build.toplevel' \
-  --extra-experimental-features 'nix-command flakes'
-```
-
-`blade-1` now uses shared NixOS modules under `nixos/blades/shared/`.
-Disk mounts are label-based defaults in `nixos/blades/shared/disks.nix` and can be overridden per-host later.
+Repeat with `blade-1` and `blade-3`.
 
 ## Apply a Blade Profile Remotely from macOS
 
@@ -102,15 +88,9 @@ rsync -az --delete --exclude '.git/' --exclude 'result/' ./ vinicius.palma@blade
 ssh vinicius.palma@blade-2 "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#vinicius.palma@blade-2'"
 ```
 
-For the NixOS pilot (`blade-1`):
+## Zeroclaw on Blade-1 / Blade-2 / Blade-3
 
-```bash
-just blade-nixos-build
-```
-
-## Zeroclaw on Blade-2 / Blade-3
-
-`zeroclaw` is built from upstream source (`github:zeroclaw-labs/zeroclaw`) by this flake and included in the Home Manager profiles for `blade-2` and `blade-3`.
+`zeroclaw` is built from upstream source (`github:zeroclaw-labs/zeroclaw`) by this flake and included in the Home Manager profiles for blade hosts.
 
 Build from source on a blade:
 
@@ -183,5 +163,3 @@ Hardware note:
 
 - `path:.#...` is used so local changes are evaluated even before `git add`.
 - Blade networking is DHCP-first in this setup.
-- Keep shared blade settings in `nixos/blades/shared/` and override per-host only when needed.
-- USB recovery runbook for blade-1: `docs/blade-1-usb-recovery-runbook.md`
