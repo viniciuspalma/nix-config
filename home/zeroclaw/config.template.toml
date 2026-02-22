@@ -145,9 +145,9 @@ max_concurrent = 4
 
 [agent]
 compact_context = false
-max_tool_iterations = 100
-max_history_messages = 50
-parallel_tools = false
+max_tool_iterations = 10000
+max_history_messages = 500
+parallel_tools = true
 tool_dispatcher = "auto"
 
 [skills]
@@ -168,7 +168,7 @@ max_run_history = 50
 
 [channels_config]
 cli = true
-message_timeout_secs = 300
+message_timeout_secs = 15000
 
 [channels_config.discord]
 bot_token = "<REDACTED>"
