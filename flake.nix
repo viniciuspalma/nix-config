@@ -25,6 +25,11 @@
       url = "github:nix-community/nix-vscode-extensions";
     };
 
+    nix-openclaw = {
+      url = "github:openclaw/nix-openclaw";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs = inputs @ {
@@ -34,6 +39,7 @@
     nixvim,
     home-manager,
     nix-vscode-extensions,
+    nix-openclaw,
     ...
   }: let
     lib = nixpkgs.lib;
@@ -103,17 +109,10 @@
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
+        overlays = [nix-openclaw.overlays.default];
       };
     in
-      pkgs.writeShellApplication {
-        name = "openclaw";
-        runtimeInputs = [
-          pkgs.nodejs
-        ];
-        text = ''
-          exec npx --yes @openclaw/openclaw "$@"
-        '';
-      };
+      pkgs.openclaw-gateway;
 
   in {
     # Build darwin flake using:

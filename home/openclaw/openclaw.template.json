@@ -59,7 +59,6 @@
       groupPolicy: "allowlist",
       allowBots: false,
       historyLimit: 50,
-      streaming: "off",
     },
   },
 
