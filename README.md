@@ -84,10 +84,12 @@ just --set blade_hostname blade-3 blade-sync
 Required environment variables for `blade-switch` (from your current shell, or via `just ... blade-switch-op` with `op run --environment`):
 
 - `DISCORD_BOT_TOKEN`
+- `ANTHROPIC_API_KEY`
 - `SENTRY_AUTH_TOKEN`
 
-Optional Sentry defaults synced to `~/.zeroclaw/secrets/` when set:
+Optional LLM/Sentry defaults synced to `~/.zeroclaw/secrets/` when set:
 
+- `OPENAI_API_KEY` (recommended if you use `openai-codex` routes)
 - `SENTRY_BASE_URL` (optional override; SaaS default is `https://sentry.io`)
 
 Equivalent raw commands:

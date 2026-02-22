@@ -22,6 +22,7 @@
     Environment="PATH=${config.home.homeDirectory}/.nix-profile/bin:${config.home.homeDirectory}/.local/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
     Environment="SHELL=/bin/bash"
     EnvironmentFile=-%h/.zeroclaw/secrets/sentry.env
+    EnvironmentFile=-%h/.zeroclaw/secrets/llm.env
   '';
 
   home.activation.zeroclawSyncConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
@@ -34,6 +35,9 @@
     sentry_token_file="$config_dir/secrets/sentry_auth_token"
     sentry_base_url_file="$config_dir/secrets/sentry_base_url"
     sentry_env_file="$config_dir/secrets/sentry.env"
+    anthropic_key_file="$config_dir/secrets/anthropic_api_key"
+    openai_key_file="$config_dir/secrets/openai_api_key"
+    llm_env_file="$config_dir/secrets/llm.env"
 
     if [ -f "$template_file" ]; then
       ${pkgs.coreutils}/bin/install -m 600 "$template_file" "$config_file"
@@ -116,6 +120,33 @@
       ${pkgs.coreutils}/bin/chmod 600 "$sentry_env_file"
     else
       ${pkgs.coreutils}/bin/rm -f "$sentry_env_file"
+    fi
+
+    anthropic_key=""
+    if [ -f "$anthropic_key_file" ]; then
+      anthropic_key="$(${pkgs.coreutils}/bin/tr -d '\r\n' < "$anthropic_key_file")"
+    fi
+
+    openai_key=""
+    if [ -f "$openai_key_file" ]; then
+      openai_key="$(${pkgs.coreutils}/bin/tr -d '\r\n' < "$openai_key_file")"
+    fi
+
+    if [ -n "$anthropic_key" ] || [ -n "$openai_key" ]; then
+      tmp_file="$(mktemp)"
+      {
+        if [ -n "$anthropic_key" ]; then
+          printf 'ANTHROPIC_API_KEY=%s\n' "$anthropic_key"
+        fi
+        if [ -n "$openai_key" ]; then
+          printf 'OPENAI_API_KEY=%s\n' "$openai_key"
+        fi
+      } > "$tmp_file"
+
+      ${pkgs.coreutils}/bin/mv "$tmp_file" "$llm_env_file"
+      ${pkgs.coreutils}/bin/chmod 600 "$llm_env_file"
+    else
+      ${pkgs.coreutils}/bin/rm -f "$llm_env_file"
     fi
   '';
 

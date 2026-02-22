@@ -1,11 +1,13 @@
 # ZeroClaw config template extracted from blade-2 on 2026-02-21.
 # Sensitive values are redacted; keep secrets in local host config only.
 
-api_key = "<REDACTED>"
-default_provider = "openai-codex"
-default_model = "gpt-5.3-codex"
+api_key = ""
+default_provider = "anthropic"
+default_model = "claude-opus-4-6"
 default_temperature = 0.7
-model_routes = []
+model_routes = [
+    { hint = "code", provider = "openai-codex", model = "gpt-5.3-codex" },
+]
 embedding_routes = []
 
 [observability]
@@ -18,91 +20,7 @@ runtime_trace_max_entries = 200
 level = "full"
 workspace_only = true
 allowed_commands = [
-    "cd",
-    "bash",
-    "sh",
-    "zsh",
-    "env",
-    "printenv",
-    "command",
-    "type",
-    "which",
-    "true",
-    "false",
-    "test",
-    "sleep",
-    "ssh",
-    "ssh-keygen",
-    "ssh-add",
-    "ssh-agent",
-    "scp",
-    "rsync",
-    "git",
-    "gh",
-    "nix",
-    "nix-shell",
-    "home-manager",
-    "direnv",
-    "just",
-    "go",
-    "gofmt",
-    "goimports",
-    "gopls",
-    "golangci-lint",
-    "dlv",
-    "gotestsum",
-    "mockgen",
-    "stringer",
-    "air",
-    "templ",
-    "make",
-    "gmake",
-    "task",
-    "pkg-config",
-    "protoc",
-    "buf",
-    "sqlc",
-    "docker",
-    "docker-compose",
-    "podman",
-    "podman-compose",
-    "ls",
-    "cat",
-    "grep",
-    "rg",
-    "find",
-    "xargs",
-    "awk",
-    "sed",
-    "cut",
-    "tr",
-    "sort",
-    "uniq",
-    "tee",
-    "jq",
-    "yq",
-    "basename",
-    "dirname",
-    "realpath",
-    "readlink",
-    "stat",
-    "echo",
-    "printf",
-    "pwd",
-    "wc",
-    "head",
-    "tail",
-    "date",
-    "touch",
-    "mkdir",
-    "cp",
-    "mv",
-    "rm",
-    "ln",
-    "chmod",
-    "chown",
-    "curl",
-    "wget",
+    "*",
 ]
 forbidden_paths = []
 max_actions_per_hour = 2000
@@ -110,6 +28,8 @@ max_cost_per_day_cents = 10000
 require_approval_for_medium_risk = false
 block_high_risk_commands = false
 shell_env_passthrough = [
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY",
     "SENTRY_AUTH_TOKEN",
     "SENTRY_ORG",
     "SENTRY_BASE_URL",
@@ -159,8 +79,10 @@ open_skills_enabled = false
 prompt_injection_mode = "full"
 
 [query_classification]
-enabled = false
-rules = []
+enabled = true
+rules = [
+    { hint = "code", keywords = ["code", "feature", "refactor", "bug", "fix", "test", "build", "compile", "stack trace", "migration"], patterns = ["```", "panic:", "Traceback (most recent call last):", "Exception:", "go test", "cargo ", "pytest ", "npm ", "pnpm ", "diff --git", "func ", "class "], priority = 20 },
+]
 
 [heartbeat]
 enabled = false
@@ -238,7 +160,7 @@ encrypt = true
 
 [browser]
 enabled = false
-allowed_domains = []
+allowed_domains = ["*"]
 backend = "agent_browser"
 native_headless = true
 native_webdriver_url = "http://127.0.0.1:9515"
@@ -323,6 +245,26 @@ enabled = false
 boards = []
 
 [agents]
+
+[agents.coder]
+provider = "openai-codex"
+model = "gpt-5.3-codex"
+system_prompt = "You are the coding sub-agent. Implement code changes safely, run targeted checks, and return concrete diffs/results."
+temperature = 0.2
+max_depth = 2
+agentic = true
+allowed_tools = ["shell", "file_read", "file_write", "git_operations"]
+max_iterations = 120
+
+[agents.reviewer]
+provider = "anthropic"
+model = "claude-opus-4-6"
+system_prompt = "You are the review sub-agent. Focus on bug risk, regressions, and missing tests. Do not edit files unless explicitly requested."
+temperature = 0.1
+max_depth = 2
+agentic = true
+allowed_tools = ["shell", "file_read"]
+max_iterations = 40
 
 [hooks]
 enabled = true

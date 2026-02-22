@@ -53,11 +53,17 @@ blade-sync-zeroclaw-secret:
     echo "ERROR: missing DISCORD_BOT_TOKEN in environment."; \
     exit 1; \
   fi
+  if [ -z "${ANTHROPIC_API_KEY:-}" ]; then \
+    echo "ERROR: missing ANTHROPIC_API_KEY in environment."; \
+    exit 1; \
+  fi
   if [ -z "${SENTRY_AUTH_TOKEN:-}" ]; then \
     echo "ERROR: missing SENTRY_AUTH_TOKEN in environment."; \
     exit 1; \
   fi
   printf '%s' "$DISCORD_BOT_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/discord_bot_token'
+  printf '%s' "$ANTHROPIC_API_KEY" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/anthropic_api_key'
+  if [ -n "${OPENAI_API_KEY:-}" ]; then printf '%s' "$OPENAI_API_KEY" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/openai_api_key'; else ssh {{blade_user}}@{{blade_hostname}} 'rm -f ~/.zeroclaw/secrets/openai_api_key'; fi
   printf '%s' "$SENTRY_AUTH_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/sentry_auth_token'
   if [ -n "${SENTRY_BASE_URL:-}" ]; then printf '%s' "$SENTRY_BASE_URL" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/sentry_base_url'; fi
 
