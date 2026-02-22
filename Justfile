@@ -48,7 +48,7 @@ blade-sync:
     --exclude 'result/' \
     ./ {{blade_user}}@{{blade_hostname}}:~/.config/nix-config/
 
-blade-sync-zeroclaw-secret:
+blade-sync-openclaw-secret:
   if [ -z "${DISCORD_BOT_TOKEN:-}" ]; then \
     echo "ERROR: missing DISCORD_BOT_TOKEN in environment."; \
     exit 1; \
@@ -61,13 +61,13 @@ blade-sync-zeroclaw-secret:
     echo "ERROR: missing SENTRY_AUTH_TOKEN in environment."; \
     exit 1; \
   fi
-  printf '%s' "$DISCORD_BOT_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/discord_bot_token'
-  printf '%s' "$ANTHROPIC_API_KEY" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/anthropic_api_key'
-  if [ -n "${OPENAI_API_KEY:-}" ]; then printf '%s' "$OPENAI_API_KEY" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/openai_api_key'; else ssh {{blade_user}}@{{blade_hostname}} 'rm -f ~/.zeroclaw/secrets/openai_api_key'; fi
-  printf '%s' "$SENTRY_AUTH_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/sentry_auth_token'
-  if [ -n "${SENTRY_BASE_URL:-}" ]; then printf '%s' "$SENTRY_BASE_URL" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/sentry_base_url'; fi
+  printf '%s' "$DISCORD_BOT_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/discord_bot_token'
+  printf '%s' "$ANTHROPIC_API_KEY" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/anthropic_api_key'
+  if [ -n "${OPENAI_API_KEY:-}" ]; then printf '%s' "$OPENAI_API_KEY" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/openai_api_key'; else ssh {{blade_user}}@{{blade_hostname}} 'rm -f ~/.openclaw-{{blade_hostname}}/secrets/openai_api_key'; fi
+  printf '%s' "$SENTRY_AUTH_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/sentry_auth_token'
+  if [ -n "${SENTRY_BASE_URL:-}" ]; then printf '%s' "$SENTRY_BASE_URL" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/sentry_base_url'; fi
 
-blade-switch: blade-sync blade-sync-zeroclaw-secret
+blade-switch: blade-sync blade-sync-openclaw-secret
   ssh {{blade_user}}@{{blade_hostname}} "export PATH={{blade_nix_bin_dir}}:\$PATH; cd ~/.config/nix-config && {{blade_nix_bin}} run home-manager/master -- switch --flake 'path:.#{{blade_user}}@{{blade_hostname}}'"
 
 blade-switch-all:
@@ -81,11 +81,11 @@ blade-switch-op:
 blade-switch-all-op:
   op run --account {{op_account}} --environment {{op_environment}} -- just blade-switch-all
 
-blade-zeroclaw-build: blade-sync
-  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && {{blade_nix_bin}} build 'path:.#packages.aarch64-linux.zeroclaw' --extra-experimental-features 'nix-command flakes'"
+blade-openclaw-build: blade-sync
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && {{blade_nix_bin}} build 'path:.#packages.aarch64-linux.openclaw' --extra-experimental-features 'nix-command flakes'"
 
-blade-zeroclaw-run: blade-sync
-  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && {{blade_nix_bin}} run 'path:.#zeroclaw' -- --help"
+blade-openclaw-run: blade-sync
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && OPENCLAW_PROFILE={{blade_hostname}} {{blade_nix_bin}} run 'path:.#openclaw' -- --help"
 
 ############################################################################
 #

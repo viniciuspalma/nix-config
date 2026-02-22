@@ -141,8 +141,7 @@
         "nix-darwin": "nix-darwin",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixpkgs": "nixpkgs_2",
-        "nixvim": "nixvim",
-        "zeroclawSrc": "zeroclawSrc"
+        "nixvim": "nixvim"
       }
     },
     "systems": {
@@ -157,23 +156,6 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "zeroclawSrc": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1771755418,
-        "narHash": "sha256-BGqX1XiH14AywIuSkW/fvNLaXSnmFOSWhQzaV33Jrxg=",
-        "owner": "zeroclaw-labs",
-        "repo": "zeroclaw",
-        "rev": "c47fb22d0390b62f8d64d895d68d696deb492315",
-        "type": "github"
-      },
-      "original": {
-        "owner": "zeroclaw-labs",
-        "ref": "main",
-        "repo": "zeroclaw",
         "type": "github"
       }
     }

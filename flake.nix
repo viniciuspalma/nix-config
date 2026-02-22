@@ -25,10 +25,6 @@
       url = "github:nix-community/nix-vscode-extensions";
     };
 
-    zeroclawSrc = {
-      url = "github:zeroclaw-labs/zeroclaw?ref=main";
-      flake = false;
-    };
   };
 
   outputs = inputs @ {
@@ -38,7 +34,6 @@
     nixvim,
     home-manager,
     nix-vscode-extensions,
-    zeroclawSrc,
     ...
   }: let
     lib = nixpkgs.lib;
@@ -102,42 +97,24 @@
           ];
       };
 
-    zeroclawSystems = ["aarch64-linux"];
+    agentSystems = ["aarch64-linux"];
 
-    mkZeroclawPackage = system: let
+    mkOpenclawPackage = system: let
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
       };
     in
-      pkgs.rustPlatform.buildRustPackage {
-        pname = "zeroclaw";
-        version = "unstable-main";
-        src = zeroclawSrc;
-
-        cargoLock = {
-          lockFile = "${zeroclawSrc}/Cargo.lock";
-        };
-
-        nativeBuildInputs = with pkgs; [
-          pkg-config
+      pkgs.writeShellApplication {
+        name = "openclaw";
+        runtimeInputs = [
+          pkgs.nodejs
         ];
-
-        buildInputs = with pkgs;
-          lib.optionals stdenv.hostPlatform.isLinux [
-            openssl
-          ];
-
-        doCheck = false;
-
-        meta = with lib; {
-          description = "Open source AI coding agent for software engineering tasks";
-          homepage = "https://github.com/zeroclaw-labs/zeroclaw";
-          license = licenses.mit;
-          mainProgram = "zeroclaw";
-          platforms = platforms.linux;
-        };
+        text = ''
+          exec npx --yes @openclaw/openclaw "$@"
+        '';
       };
+
   in {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#Viniciuss-MacBook-Pro
@@ -174,23 +151,23 @@
         lib.nameValuePair "${username}@${hostname}" (mkBladeHomeConfiguration hostname host))
       standaloneBladeHosts;
 
-    packages = lib.genAttrs zeroclawSystems (system: let
-      zeroclaw = mkZeroclawPackage system;
+    packages = lib.genAttrs agentSystems (system: let
+      openclaw = mkOpenclawPackage system;
     in {
-      inherit zeroclaw;
-      default = zeroclaw;
+      inherit openclaw;
+      default = openclaw;
     });
 
-    apps = lib.genAttrs zeroclawSystems (system: let
-      program = "${self.packages.${system}.zeroclaw}/bin/zeroclaw";
+    apps = lib.genAttrs agentSystems (system: let
+      openclawProgram = "${self.packages.${system}.openclaw}/bin/openclaw";
     in {
-      zeroclaw = {
+      openclaw = {
         type = "app";
-        inherit program;
+        program = openclawProgram;
       };
       default = {
         type = "app";
-        inherit program;
+        program = openclawProgram;
       };
     });
 

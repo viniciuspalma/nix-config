@@ -1,0 +1,94 @@
+{
+  // Managed by Home Manager.
+  // Runtime secrets are loaded from ${OPENCLAW_STATE_DIR}/.env.
+  env: {
+    shellEnv: {
+      enabled: true,
+      timeoutMs: 15000,
+    },
+  },
+
+  agents: {
+    defaults: {
+      workspace: "${OPENCLAW_STATE_DIR}/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["openai-codex/gpt-5.3-codex"],
+      },
+      subagents: {
+        model: "openai-codex/gpt-5.3-codex",
+        maxConcurrent: 2,
+        maxSpawnDepth: 2,
+      },
+      maxConcurrent: 3,
+      skipBootstrap: false,
+    },
+    list: [
+      {
+        id: "main",
+        default: true,
+        name: "Devi",
+      },
+      {
+        id: "coder",
+        name: "Coder",
+        model: "openai-codex/gpt-5.3-codex",
+        tools: {
+          profile: "coding",
+          deny: ["browser", "canvas", "nodes", "cron"],
+        },
+      },
+    ],
+  },
+
+  bindings: [{ agentId: "main", match: { channel: "discord" } }],
+
+  channels: {
+    defaults: {
+      groupPolicy: "allowlist",
+    },
+    discord: {
+      enabled: true,
+      dmPolicy: "allowlist",
+      allowFrom: [
+        "899754770343030824",
+        "1289613951310499903",
+        "132541484321865728",
+        "492830492379316254",
+      ],
+      groupPolicy: "allowlist",
+      allowBots: false,
+      historyLimit: 50,
+      streaming: "off",
+    },
+  },
+
+  commands: {
+    native: "auto",
+    text: true,
+    config: false,
+    debug: false,
+    restart: false,
+  },
+
+  hooks: {
+    enabled: true,
+    path: "/hooks",
+  },
+
+  tools: {
+    profile: "full",
+    exec: {
+      backgroundMs: 10000,
+      timeoutSec: 1800,
+      notifyOnExit: true,
+      notifyOnExitEmptySuccess: false,
+    },
+    elevated: {
+      enabled: true,
+      allowFrom: {
+        discord: ["899754770343030824"],
+      },
+    },
+  },
+}

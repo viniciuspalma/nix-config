@@ -87,7 +87,12 @@ Required environment variables for `blade-switch` (from your current shell, or v
 - `ANTHROPIC_API_KEY`
 - `SENTRY_AUTH_TOKEN`
 
-Optional LLM/Sentry defaults synced to `~/.zeroclaw/secrets/` when set:
+`blade-switch` syncs secrets into the OpenClaw profile for the target host (`~/.openclaw-<blade_hostname>/secrets`) and Home Manager writes:
+
+- `~/.openclaw-<blade_hostname>/openclaw.json`
+- `~/.openclaw-<blade_hostname>/.env`
+
+Optional LLM/Sentry defaults synced to `~/.openclaw-<blade>/secrets/` when set:
 
 - `OPENAI_API_KEY` (recommended if you use `openai-codex` routes)
 - `SENTRY_BASE_URL` (optional override; SaaS default is `https://sentry.io`)
@@ -99,22 +104,28 @@ rsync -az --delete --exclude '.git/' --exclude 'result/' ./ vinicius.palma@blade
 ssh vinicius.palma@blade-2 "cd ~/.config/nix-config && nix run home-manager/master -- switch --flake 'path:.#vinicius.palma@blade-2'"
 ```
 
-## Zeroclaw on Blade-1 / Blade-2 / Blade-3
+## OpenClaw on Blade-1 / Blade-2 / Blade-3
 
-`zeroclaw` is built from upstream source (`github:zeroclaw-labs/zeroclaw`) by this flake and included in the Home Manager profiles for blade hosts.
+This repo now manages OpenClaw state/config per blade profile:
 
-Build from source on a blade:
+- `blade-1` -> `~/.openclaw-blade-1/openclaw.json`
+- `blade-2` -> `~/.openclaw-blade-2/openclaw.json`
+- `blade-3` -> `~/.openclaw-blade-3/openclaw.json`
+
+The runtime `.env` is generated in the same profile state directory (`~/.openclaw-<blade>/.env`) from synced secret files.
+
+Build OpenClaw wrapper package on a blade:
 
 ```bash
-just --set blade_hostname blade-2 blade-zeroclaw-build
-just --set blade_hostname blade-3 blade-zeroclaw-build
+just --set blade_hostname blade-2 blade-openclaw-build
+just --set blade_hostname blade-3 blade-openclaw-build
 ```
 
 Run on a blade:
 
 ```bash
-just --set blade_hostname blade-2 blade-zeroclaw-run
-just --set blade_hostname blade-3 blade-zeroclaw-run
+just --set blade_hostname blade-2 blade-openclaw-run
+just --set blade_hostname blade-3 blade-openclaw-run
 ```
 
 ## Blade Fan Control (Ubuntu blades, script-only; outside Nix)
