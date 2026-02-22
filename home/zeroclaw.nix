@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   self,
@@ -15,6 +16,11 @@
 
   home.file.".zeroclaw/config.template.toml".source = ./zeroclaw/config.template.toml;
   home.file.".zeroclaw/workspace/skills/gmailctl".source = ../skills/gmailctl;
+  home.file.".config/systemd/user/zeroclaw.service.d/10-environment.conf".text = ''
+    [Service]
+    Environment="PATH=${config.home.homeDirectory}/.nix-profile/bin:${config.home.homeDirectory}/.local/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+    Environment="SHELL=/bin/bash"
+  '';
 
   home.activation.zeroclawSyncConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
     set -euo pipefail
