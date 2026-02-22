@@ -6,13 +6,14 @@ import re
 import sys
 import time
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 DEFAULT_BASE_URL = "https://sentry.io"
 DEFAULT_ORG = "your-org"
 DEFAULT_PROJECT = "your-project"
 MAX_LIMIT = 50
+SAAS_API_HOSTS = {"sentry.io", "us.sentry.io", "de.sentry.io"}
 
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 IP_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
@@ -84,6 +85,27 @@ def build_url(base_url, path, params=None):
     if params:
         url = f"{url}?{urlencode(params, doseq=True)}"
     return url
+
+
+def normalize_base_url(raw_base_url):
+    value = (raw_base_url or DEFAULT_BASE_URL).strip()
+    if "://" not in value:
+        value = f"https://{value}"
+
+    parsed = urlparse(value)
+    if not parsed.netloc:
+        raise RuntimeError(f"Invalid --base-url value: {raw_base_url!r}")
+
+    host = parsed.netloc.lower()
+    if host.endswith(".sentry.io") and host not in SAAS_API_HOSTS:
+        # Org-scoped UI hostnames are common in the browser, but SaaS API uses sentry.io (or us/de regional hosts).
+        print(
+            f"Warning: {value} appears to be an org UI hostname; using {DEFAULT_BASE_URL} for API calls.",
+            file=sys.stderr,
+        )
+        return DEFAULT_BASE_URL
+
+    return f"{parsed.scheme}://{parsed.netloc}"
 
 
 def paged_get(base_url, path, params, token, limit):
@@ -159,7 +181,7 @@ def build_parser():
     parser.add_argument(
         "--base-url",
         default=os.environ.get("SENTRY_BASE_URL", DEFAULT_BASE_URL),
-        help="Sentry base URL (default: https://sentry.io)",
+        help="Sentry API base URL (SaaS default: https://sentry.io; regional options: https://us.sentry.io, https://de.sentry.io)",
     )
     parser.add_argument(
         "--org",
@@ -211,7 +233,7 @@ def main():
     if not token:
         raise RuntimeError("Missing SENTRY_AUTH_TOKEN env var.")
 
-    base_url = args.base_url
+    base_url = normalize_base_url(args.base_url)
 
     if args.command == "list-issues":
         data = handle_list_issues(args, token, base_url)

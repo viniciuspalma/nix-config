@@ -81,6 +81,15 @@ just --set blade_hostname blade-3 blade-sync
 1. Syncs your local repo contents (including uncommitted local changes) to `~/.config/nix-config` on the blade.
 2. Runs Home Manager switch directly on the blade.
 
+Required environment variables for `blade-switch` (from your current shell, or via `just ... blade-switch-op` with `op run --environment`):
+
+- `DISCORD_BOT_TOKEN`
+- `SENTRY_AUTH_TOKEN`
+
+Optional Sentry defaults synced to `~/.zeroclaw/secrets/` when set:
+
+- `SENTRY_BASE_URL` (optional override; SaaS default is `https://sentry.io`)
+
 Equivalent raw commands:
 
 ```bash

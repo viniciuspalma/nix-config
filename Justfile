@@ -53,7 +53,13 @@ blade-sync-zeroclaw-secret:
     echo "ERROR: missing DISCORD_BOT_TOKEN in environment."; \
     exit 1; \
   fi
+  if [ -z "${SENTRY_AUTH_TOKEN:-}" ]; then \
+    echo "ERROR: missing SENTRY_AUTH_TOKEN in environment."; \
+    exit 1; \
+  fi
   printf '%s' "$DISCORD_BOT_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/discord_bot_token'
+  printf '%s' "$SENTRY_AUTH_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/sentry_auth_token'
+  if [ -n "${SENTRY_BASE_URL:-}" ]; then printf '%s' "$SENTRY_BASE_URL" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.zeroclaw/secrets && cat > ~/.zeroclaw/secrets/sentry_base_url'; fi
 
 blade-switch: blade-sync blade-sync-zeroclaw-secret
   ssh {{blade_user}}@{{blade_hostname}} "export PATH={{blade_nix_bin_dir}}:\$PATH; cd ~/.config/nix-config && {{blade_nix_bin}} run home-manager/master -- switch --flake 'path:.#{{blade_user}}@{{blade_hostname}}'"

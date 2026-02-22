@@ -1,6 +1,6 @@
 ---
 name: "sentry"
-description: "Use when the user asks to inspect Sentry issues or events, summarize recent production errors, or pull basic Sentry health data via the Sentry API; perform read-only queries with the bundled script and require `SENTRY_AUTH_TOKEN`."
+description: "Use when the user asks to inspect Sentry issues or events, summarize production errors, or pull Sentry health data for Code Visionary services; perform read-only queries with the bundled script, require `SENTRY_AUTH_TOKEN`, and choose project from the approved list based on request context."
 ---
 
 
@@ -10,8 +10,12 @@ description: "Use when the user asks to inspect Sentry issues or events, summari
 
 - If not already authenticated, ask the user to provide a valid `SENTRY_AUTH_TOKEN` (read-only scopes such as `project:read`, `event:read`) or to log in and create one before running commands.
 - Set `SENTRY_AUTH_TOKEN` as an env var.
-- Optional defaults: `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_BASE_URL`.
-- Defaults: org/project `{your-org}`/`{your-project}`, time range `24h`, environment `prod`, limit 20 (max 50).
+- Org is fixed to `code-visionary`.
+- Do not rely on `SENTRY_PROJECT` env var; always select `--project` from the project list below using request context.
+- API base URL defaults to `https://sentry.io` for Sentry SaaS.
+- `https://code-visionary.sentry.io` is the UI host; do not use it as the API base URL.
+- Optional override: `SENTRY_BASE_URL` (for region/self-hosted only, e.g. `https://us.sentry.io`, `https://de.sentry.io`, or your self-hosted domain).
+- Defaults: time range `24h`, environment `prod`, limit 20 (max 50).
 - Always call the Sentry API (no heuristics, no caching).
 
 If the token is missing, give the user these steps:
@@ -20,6 +24,23 @@ If the token is missing, give the user these steps:
 3. Set `SENTRY_AUTH_TOKEN` as an environment variable in their system.
 4. Offer to guide them through setting the environment variable for their OS/shell if needed.
 - Never ask the user to paste the full token in chat. Ask them to set it locally and confirm when ready.
+
+## Approved projects (context-driven selection)
+
+Use one project per query unless the user explicitly asks for a cross-project sweep.
+
+- `admin-dapp`: API administrative repo (`dgas-api`) / internal admin flows.
+- `dapp-admin`: UI react-router repo (`dapp-admin`).
+- `dgas-api`: API customer repo (`dgas-api`) / customer-facing API flows.
+- `code-visionary-web`: organization landing page react-router repo (`code-visionary-web`).
+- `dapp-tracker`: Rust location tracking API repo (`dapp-tracker`).
+- `dreamia-web`: Dreamia web application NextJS repo (`dreamia-web`).
+
+Selection rules:
+1. If user names a project explicitly, use that exact project.
+2. If request references repo/service names, map to the project list above.
+3. If request only says `dgas-api`, use `admin-dapp` for admin/internal context and `dgas-api` for customer/public context.
+4. If still ambiguous, ask one clarification question before querying.
 
 ## Core tasks (use bundled script)
 
@@ -39,8 +60,8 @@ User-scoped skills install under `$CODEX_HOME/skills` (default: `~/.codex/skills
 ```bash
 python3 "$SENTRY_API" \
   list-issues \
-  --org {your-org} \
-  --project {your-project} \
+  --org code-visionary \
+  --project {project-from-context} \
   --environment prod \
   --time-range 24h \
   --limit 20 \
@@ -52,8 +73,8 @@ python3 "$SENTRY_API" \
 ```bash
 python3 "$SENTRY_API" \
   list-issues \
-  --org {your-org} \
-  --project {your-project} \
+  --org code-visionary \
+  --project {project-from-context} \
   --query "ABC-123" \
   --limit 1
 ```
@@ -82,8 +103,8 @@ python3 "$SENTRY_API" \
 ```bash
 python3 "$SENTRY_API" \
   event-detail \
-  --org {your-org} \
-  --project {your-project} \
+  --org code-visionary \
+  --project {project-from-context} \
   abcdef1234567890
 ```
 
@@ -98,7 +119,8 @@ Always use these endpoints (GET only):
 
 ## Inputs and defaults
 
-- `org_slug`, `project_slug`: default to `{your-org}`/`{your-project}` (avoid non-prod orgs).
+- `org_slug`: fixed to `code-visionary`.
+- `project_slug`: choose from approved project list using request context.
 - `time_range`: default `24h` (pass as `statsPeriod`).
 - `environment`: default `prod`.
 - `limit`: default 20, max 50 (paginate until limit reached).
@@ -115,8 +137,8 @@ Always use these endpoints (GET only):
 
 ## Golden test inputs
 
-- Org: `{your-org}`
-- Project: `{your-project}`
+- Org: `code-visionary`
+- Project: one of `admin-dapp`, `dapp-admin`, `dgas-api`, `code-visionary-web`, `dapp-tracker`, `dreamia-web`
 - Issue short ID: `{ABC-123}`
 
 Example prompt: “List the top 10 open issues for prod in the last 24h.”
