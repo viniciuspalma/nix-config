@@ -39,6 +39,7 @@ darwin-debug: darwin-set-proxy
 
 blade-build:
   nix build 'path:.#homeConfigurations."{{blade_user}}@{{blade_hostname}}".activationPackage' \
+    --accept-flake-config \
     --extra-experimental-features 'nix-command flakes'
 
 blade-sync:
@@ -64,15 +65,24 @@ blade-sync-openclaw-secret:
   printf '%s' "$DISCORD_BOT_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/discord_bot_token'
   printf '%s' "$ANTHROPIC_API_KEY" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/anthropic_api_key'
   if [ -n "${OPENAI_API_KEY:-}" ]; then printf '%s' "$OPENAI_API_KEY" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/openai_api_key'; else ssh {{blade_user}}@{{blade_hostname}} 'rm -f ~/.openclaw-{{blade_hostname}}/secrets/openai_api_key'; fi
+  if [ -n "${GEMINI_API_KEY:-}" ]; then printf '%s' "$GEMINI_API_KEY" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/gemini_api_key'; else ssh {{blade_user}}@{{blade_hostname}} 'rm -f ~/.openclaw-{{blade_hostname}}/secrets/gemini_api_key'; fi
   printf '%s' "$SENTRY_AUTH_TOKEN" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/sentry_auth_token'
   if [ -n "${SENTRY_BASE_URL:-}" ]; then printf '%s' "$SENTRY_BASE_URL" | ssh {{blade_user}}@{{blade_hostname}} 'umask 077; mkdir -p ~/.openclaw-{{blade_hostname}}/secrets && cat > ~/.openclaw-{{blade_hostname}}/secrets/sentry_base_url'; fi
 
+blade-configure-nix-cache: blade-sync
+  ssh {{blade_user}}@{{blade_hostname}} "bash ~/.config/nix-config/scripts/apply_blade_nix_daemon_conf.sh ~/.config/nix-config/deploy/nix-daemon.conf {{blade_user}}"
+
 blade-switch: blade-sync blade-sync-openclaw-secret
-  ssh {{blade_user}}@{{blade_hostname}} "export PATH={{blade_nix_bin_dir}}:\$PATH; cd ~/.config/nix-config && {{blade_nix_bin}} run home-manager/master -- switch --flake 'path:.#{{blade_user}}@{{blade_hostname}}'"
+  ssh {{blade_user}}@{{blade_hostname}} "export PATH={{blade_nix_bin_dir}}:\$PATH; export NIX_CONFIG='accept-flake-config = true'; cd ~/.config/nix-config && {{blade_nix_bin}} run --accept-flake-config home-manager/master -- switch --flake 'path:.#{{blade_user}}@{{blade_hostname}}'"
 
 blade-switch-all:
+  set -eu; \
   for host in blade-2 blade-3; do \
-    just --set blade_hostname "$host" blade-switch; \
+    echo "==> blade-switch on $host"; \
+    if ! just --set blade_hostname "$host" blade-switch; then \
+      echo "ERROR: blade-switch failed on $host; aborting remaining hosts."; \
+      exit 1; \
+    fi; \
   done
 
 blade-switch-op:
@@ -82,10 +92,10 @@ blade-switch-all-op:
   op run --account {{op_account}} --environment {{op_environment}} -- just blade-switch-all
 
 blade-openclaw-build: blade-sync
-  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && {{blade_nix_bin}} build 'path:.#packages.aarch64-linux.openclaw' --extra-experimental-features 'nix-command flakes'"
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && {{blade_nix_bin}} build --accept-flake-config 'path:.#packages.aarch64-linux.openclaw' --extra-experimental-features 'nix-command flakes'"
 
 blade-openclaw-run: blade-sync
-  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && OPENCLAW_PROFILE={{blade_hostname}} {{blade_nix_bin}} run 'path:.#openclaw' -- --help"
+  ssh {{blade_user}}@{{blade_hostname}} "cd ~/.config/nix-config && OPENCLAW_PROFILE={{blade_hostname}} {{blade_nix_bin}} run --accept-flake-config 'path:.#openclaw' -- --help"
 
 ############################################################################
 #

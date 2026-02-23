@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  llmAgents,
   self,
   hostname ? "default",
   ...
@@ -23,7 +24,8 @@
   '';
 in {
   home.packages = [
-    self.packages.${pkgs.system}.openclaw
+    (lib.hiPrio self.packages.${pkgs.system}.openclaw)
+    (lib.hiPrio llmAgents.packages.${pkgs.system}.codex)
     pkgs.sqlite
   ];
 
@@ -40,11 +42,54 @@ in {
   };
 
   home.file."${stateDirRelative}/openclaw.template.json".source = ./openclaw/openclaw.template.json;
+  home.file."${stateDirRelative}/workspace/AGENTS.md" = {
+    source = ./openclaw/workspace/AGENTS.md;
+    force = true;
+  };
+  home.file."${stateDirRelative}/workspace/SOUL.md" = {
+    source = ./openclaw/workspace/SOUL.md;
+    force = true;
+  };
+  home.file."${stateDirRelative}/workspace/IDENTITY.md" = {
+    source = ./openclaw/workspace/IDENTITY.md;
+    force = true;
+  };
+  home.file."${stateDirRelative}/workspace/USER.md" = {
+    source = ./openclaw/workspace/USER.md;
+    force = true;
+  };
+  home.file."${stateDirRelative}/workspace/TOOLS.md" = {
+    source = ./openclaw/workspace/TOOLS.md;
+    force = true;
+  };
+  home.file."${stateDirRelative}/workspace/HEARTBEAT.md" = {
+    source = ./openclaw/workspace/HEARTBEAT.md;
+    force = true;
+  };
   home.file."${stateDirRelative}/workspace/skills/gmailctl".source = ../skills/gmailctl;
   home.file."${stateDirRelative}/workspace/skills/sentry".source = ../skills/sentry;
+
+  systemd.user.services."openclaw-gateway" = {
+    Unit = {
+      Description = "OpenClaw Gateway";
+      After = ["network-online.target"];
+      Wants = ["network-online.target"];
+    };
+
+    Service = {
+      Type = "simple";
+      ExecStart = "${self.packages.${pkgs.system}.openclaw}/bin/openclaw --profile ${profile} gateway";
+      Restart = "always";
+      RestartSec = "3s";
+      WorkingDirectory = stateDir;
+    };
+
+    Install = {
+      WantedBy = ["default.target"];
+    };
+  };
+
   home.file.".config/systemd/user/openclaw-gateway.service.d/10-environment.conf".text = serviceEnv;
-  home.file.".config/systemd/user/openclaw-gateway-${profile}.service.d/10-environment.conf".text =
-    serviceEnv;
 
   home.activation.openclawSyncConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
     set -euo pipefail
@@ -63,6 +108,9 @@ in {
       ${pkgs.coreutils}/bin/install -m 600 "$template_file" "$config_file"
     fi
 
+    ${pkgs.coreutils}/bin/mkdir -p "$config_dir/agents/main/sessions" "$config_dir/credentials"
+    ${pkgs.coreutils}/bin/rm -f "$workspace_dir/BOOTSTRAP.md"
+
     read_secret() {
       secret_file="$1"
       if [ -f "$secret_file" ]; then
@@ -73,8 +121,24 @@ in {
     discord_token="$(read_secret "$secrets_dir/discord_bot_token")"
     anthropic_key="$(read_secret "$secrets_dir/anthropic_api_key")"
     openai_key="$(read_secret "$secrets_dir/openai_api_key")"
+    gemini_key="$(read_secret "$secrets_dir/gemini_api_key")"
     sentry_token="$(read_secret "$secrets_dir/sentry_auth_token")"
     sentry_base_url="$(read_secret "$secrets_dir/sentry_base_url")"
+    gateway_token_file="$secrets_dir/gateway_token"
+    hooks_token_file="$secrets_dir/hooks_token"
+
+    if [ ! -s "$gateway_token_file" ]; then
+      ${pkgs.openssl}/bin/openssl rand -hex 32 > "$gateway_token_file"
+      ${pkgs.coreutils}/bin/chmod 600 "$gateway_token_file"
+    fi
+
+    if [ ! -s "$hooks_token_file" ]; then
+      ${pkgs.openssl}/bin/openssl rand -hex 32 > "$hooks_token_file"
+      ${pkgs.coreutils}/bin/chmod 600 "$hooks_token_file"
+    fi
+
+    gateway_token="$(read_secret "$gateway_token_file")"
+    hooks_token="$(read_secret "$hooks_token_file")"
 
     tmp_file="$(mktemp)"
     {
@@ -92,12 +156,21 @@ in {
       if [ -n "$openai_key" ]; then
         printf 'OPENAI_API_KEY=%s\n' "$openai_key"
       fi
+      if [ -n "$gemini_key" ]; then
+        printf 'GEMINI_API_KEY=%s\n' "$gemini_key"
+      fi
       if [ -n "$sentry_token" ]; then
         printf 'SENTRY_AUTH_TOKEN=%s\n' "$sentry_token"
         printf 'SENTRY_ORG=code-visionary\n'
       fi
       if [ -n "$sentry_base_url" ]; then
         printf 'SENTRY_BASE_URL=%s\n' "$sentry_base_url"
+      fi
+      if [ -n "$gateway_token" ]; then
+        printf 'OPENCLAW_GATEWAY_TOKEN=%s\n' "$gateway_token"
+      fi
+      if [ -n "$hooks_token" ]; then
+        printf 'OPENCLAW_HOOKS_TOKEN=%s\n' "$hooks_token"
       fi
     } > "$tmp_file"
 
@@ -120,7 +193,7 @@ in {
   '';
 
   home.activation.openclawRestartService = lib.hm.dag.entryAfter ["reloadSystemd" "openclawSyncConfig"] ''
-    for service in "openclaw-gateway.service" "openclaw-gateway-${profile}.service"; do
+    for service in "openclaw-gateway.service"; do
       if ${pkgs.systemd}/bin/systemctl --user is-active --quiet "$service"; then
         ${pkgs.systemd}/bin/systemctl --user restart "$service" || true
       fi

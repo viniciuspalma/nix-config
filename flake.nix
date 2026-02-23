@@ -1,5 +1,9 @@
 {
   description = "Configuration for macOS and Linux blades";
+  nixConfig = {
+    extra-substituters = ["https://cache.numtide.com"];
+    extra-trusted-public-keys = ["niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="];
+  };
 
   inputs = {
     nixpkgs = {
@@ -27,6 +31,11 @@
 
     nix-openclaw = {
       url = "github:openclaw/nix-openclaw";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -68,6 +77,7 @@
       inputs
       // {
         inherit username useremail hostname;
+        llmAgents = inputs."llm-agents";
         system = host.system;
         isBlade = host.kind == "blade";
         isDarwin = host.kind == "darwin";
@@ -112,7 +122,9 @@
         overlays = [nix-openclaw.overlays.default];
       };
     in
-      pkgs.openclaw-gateway;
+      pkgs.openclaw;
+
+    mkCodexPackage = system: inputs."llm-agents".packages.${system}.codex;
 
   in {
     # Build darwin flake using:
@@ -152,8 +164,9 @@
 
     packages = lib.genAttrs agentSystems (system: let
       openclaw = mkOpenclawPackage system;
+      codex = mkCodexPackage system;
     in {
-      inherit openclaw;
+      inherit openclaw codex;
       default = openclaw;
     });
 

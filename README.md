@@ -95,6 +95,7 @@ Required environment variables for `blade-switch` (from your current shell, or v
 Optional LLM/Sentry defaults synced to `~/.openclaw-<blade>/secrets/` when set:
 
 - `OPENAI_API_KEY` (recommended if you use `openai-codex` routes)
+- `GEMINI_API_KEY` (for Gemini provider routes and embedding/memory search fallback)
 - `SENTRY_BASE_URL` (optional override; SaaS default is `https://sentry.io`)
 
 Equivalent raw commands:
@@ -127,6 +128,29 @@ Run on a blade:
 just --set blade_hostname blade-2 blade-openclaw-run
 just --set blade_hostname blade-3 blade-openclaw-run
 ```
+
+## Codex CLI via `llm-agents.nix`
+
+Codex is installed declaratively on blades from `github:numtide/llm-agents.nix` (package: `codex`).
+
+Quick checks on a blade:
+
+```bash
+codex --version
+openclaw --profile blade-2 models list
+```
+
+Ad-hoc latest run without changing this repo:
+
+```bash
+nix run github:numtide/llm-agents.nix#codex -- --help
+```
+
+In this flake:
+
+- input: `llm-agents`
+- package source: `llm-agents.packages.<system>.codex`
+- installed by Home Manager in `home/openclaw.nix`
 
 ## Blade Fan Control (Ubuntu blades, script-only; outside Nix)
 
