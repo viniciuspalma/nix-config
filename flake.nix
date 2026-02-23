@@ -1,14 +1,12 @@
 {
-  description = "Configuration for macOS and Linux blades";
+  description = "Personal macOS nix-darwin configuration";
   nixConfig = {
     extra-substituters = ["https://cache.numtide.com"];
     extra-trusted-public-keys = ["niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="];
   };
 
   inputs = {
-    nixpkgs = {
-      url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
@@ -25,20 +23,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-vscode-extensions = {
-      url = "github:nix-community/nix-vscode-extensions";
-    };
-
-    nix-openclaw = {
-      url = "github:openclaw/nix-openclaw";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    llm-agents = {
-      url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
   outputs = inputs @ {
@@ -48,7 +33,6 @@
     nixvim,
     home-manager,
     nix-vscode-extensions,
-    nix-openclaw,
     ...
   }: let
     lib = nixpkgs.lib;
@@ -57,35 +41,21 @@
     useremail = "pockvini@gmail.com";
     darwinHostname = "ch-CQTMGK70R5";
 
+    hosts = import ./hosts;
+    darwinHost = hosts.${darwinHostname};
     nixvimModule = nixvim.homeModules.nixvim;
 
-    hosts = import ./hosts;
-
-    hostDeployment = host:
-      if host ? deployment
-      then host.deployment
-      else if host.kind == "darwin"
-      then "darwin"
-      else "home-manager";
-
-    bladeHosts = lib.filterAttrs (_: host: host.kind == "blade") hosts;
-    standaloneBladeHosts =
-      lib.filterAttrs (_: host: hostDeployment host == "home-manager") bladeHosts;
-    darwinHost = hosts.${darwinHostname};
-
-    mkSpecialArgs = hostname: host:
+    darwinSpecialArgs =
       inputs
       // {
-        inherit username useremail hostname;
-        llmAgents = inputs."llm-agents";
-        system = host.system;
-        isBlade = host.kind == "blade";
-        isDarwin = host.kind == "darwin";
-        isLinux = host.kind != "darwin";
-        isNixOS = hostDeployment host == "nixos";
+        inherit username useremail;
+        hostname = darwinHostname;
+        system = darwinHost.system;
+        isBlade = false;
+        isDarwin = true;
+        isLinux = false;
+        isNixOS = false;
       };
-
-    darwinSpecialArgs = mkSpecialArgs darwinHostname darwinHost;
 
     mkHomeModules = host:
       [
@@ -93,42 +63,7 @@
         nixvimModule
       ]
       ++ lib.optionals (host ? homeModule) [host.homeModule];
-
-    mkBladeHomeConfiguration = hostname: host: let
-      pkgs = import nixpkgs {
-        system = host.system;
-        config.allowUnfree = true;
-      };
-      specialArgs = mkSpecialArgs hostname host;
-    in
-      home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = specialArgs;
-        modules =
-          mkHomeModules host
-          ++ [
-            {
-              home.homeDirectory = "/home/${username}";
-            }
-          ];
-      };
-
-    agentSystems = ["aarch64-linux"];
-
-    mkOpenclawPackage = system: let
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-        overlays = [nix-openclaw.overlays.default];
-      };
-    in
-      pkgs.openclaw;
-
-    mkCodexPackage = system: inputs."llm-agents".packages.${system}.codex;
-
   in {
-    # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#Viniciuss-MacBook-Pro
     darwinConfigurations."${darwinHostname}" = nix-darwin.lib.darwinSystem {
       system = darwinHost.system;
       specialArgs = darwinSpecialArgs;
@@ -156,34 +91,6 @@
       ];
     };
 
-    homeConfigurations =
-      lib.mapAttrs'
-      (hostname: host:
-        lib.nameValuePair "${username}@${hostname}" (mkBladeHomeConfiguration hostname host))
-      standaloneBladeHosts;
-
-    packages = lib.genAttrs agentSystems (system: let
-      openclaw = mkOpenclawPackage system;
-      codex = mkCodexPackage system;
-    in {
-      inherit openclaw codex;
-      default = openclaw;
-    });
-
-    apps = lib.genAttrs agentSystems (system: let
-      openclawProgram = "${self.packages.${system}.openclaw}/bin/openclaw";
-    in {
-      openclaw = {
-        type = "app";
-        program = openclawProgram;
-      };
-      default = {
-        type = "app";
-        program = openclawProgram;
-      };
-    });
-
-    # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations."${darwinHostname}".pkgs;
   };
 }

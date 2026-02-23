@@ -1,4 +1,0 @@
-interface:
-  display_name: "Gmailctl"
-  short_description: "Manage Gmail filters with gmailctl safely"
-  default_prompt: "Use $gmailctl to review, validate, and apply Gmail filter changes on blade hosts."
