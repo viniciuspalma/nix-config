@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+dracula_script="$(tmux show-option -gv @system_theme_dracula_script 2>/dev/null || true)"
+rose_pine_script="$(tmux show-option -gv @system_theme_rose_pine_script 2>/dev/null || true)"
+
+if [ -z "${dracula_script}" ] || [ -z "${rose_pine_script}" ]; then
+  exit 0
+fi
+
+active_theme="$(tmux show-option -gv @system_theme_active 2>/dev/null || true)"
+system_style="$(
+  /usr/bin/defaults read -g AppleInterfaceStyle 2>/dev/null || true
+)"
+
+if [ "${system_style}" = "Dark" ]; then
+  if [ "${active_theme}" = "dracula" ]; then
+    exit 0
+  fi
+
+  tmux run-shell "${dracula_script}"
+  tmux set-option -gq @system_theme_active "dracula"
+  exit 0
+fi
+
+if [ "${active_theme}" = "rose-pine-dawn" ]; then
+  exit 0
+fi
+
+tmux set-option -gq @rose_pine_variant "dawn"
+tmux run-shell "${rose_pine_script}"
+tmux set-option -gq @system_theme_active "rose-pine-dawn"

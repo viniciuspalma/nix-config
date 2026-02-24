@@ -1,6 +1,6 @@
 let
   darkTheme = "Dracula";
-  lightTheme = "GitHub Light Default";
+  lightTheme = "Rose Pine Dawn";
 in {
   programs.ghostty = {
     enable = true;

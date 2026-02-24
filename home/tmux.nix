@@ -19,9 +19,7 @@
     customPaneNavigationAndResize = false;
 
     plugins = with pkgs.tmuxPlugins; [
-      gruvbox
       sensible
-      catppuccin
       yank
     ];
 
@@ -33,11 +31,21 @@
 
       # For neovim
       set -g focus-events on
+      set -as terminal-features ",xterm-256color:RGB,screen-256color:RGB,tmux-256color:RGB"
 
       # Update the status line every seconds
       set -g status-interval 1
 
       set -g default-command ${pkgs.zsh}/bin/zsh
+
+      # Match macOS appearance:
+      # - light: Rose Pine Dawn
+      # - dark: Dracula
+      set -g @system_theme_dracula_script "${pkgs.tmuxPlugins.dracula}/share/tmux-plugins/dracula/dracula.tmux"
+      set -g @system_theme_rose_pine_script "${pkgs.tmuxPlugins.rose-pine}/share/tmux-plugins/rose-pine/rose-pine.tmux"
+      run-shell "~/.config/nix-config/scripts/tmux-apply-theme"
+      set-hook -g client-attached "run-shell '~/.config/nix-config/scripts/tmux-apply-theme'"
+      set-hook -g client-session-changed "run-shell '~/.config/nix-config/scripts/tmux-apply-theme'"
 
       # auto window rename
       set -g automatic-rename
@@ -47,24 +55,6 @@
       set -g base-index 1
       set -g pane-base-index 1
       set-window-option -g pane-base-index 1
-
-      # catppuccin
-      set -g @catppuccin_l_left_separator ""
-      set -g @catppuccin_l_right_separator ""
-      set -g @catppuccin_r_left_separator ""
-      set -g @catppuccin_r_right_separator ""
-      set -g @catppuccin_window_separator_left ""
-      set -g @catppuccin_window_separator_right ""
-      set -g @catppuccin_status_separator_left ""
-      set -g @catppuccin_status_separator_right ""
-      set -g @catppuccin_window_middle_separator "█"
-      set -g @catppuccin_date_time "%Y-%m-%d %H:%M"
-      set -g @catppuccin_user "on"
-      set -g @catppuccin_host "on"
-
-      # Use window name (#W) instead of pane title (#T) for shorter labels
-      set -g @catppuccin_window_text " #W"
-      set -g @catppuccin_window_current_text " #W"
 
       # Set new panes to open in current directory
       bind c new-window -c "#{pane_current_path}"
