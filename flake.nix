@@ -24,6 +24,11 @@
     };
 
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -33,6 +38,7 @@
     nixvim,
     home-manager,
     nix-vscode-extensions,
+    llm-agents,
     ...
   }: let
     lib = nixpkgs.lib;
@@ -76,6 +82,7 @@
         {
           nixpkgs.overlays = [
             nix-vscode-extensions.overlays.default
+            llm-agents.overlays.default
           ];
         }
         {

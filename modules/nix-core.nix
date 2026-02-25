@@ -29,6 +29,8 @@
   # "error: cannot link '/nix/store/.tmp-link-xxxxx-xxxxx' to '/nix/store/.links/xxxx': File exists"
   nix.settings = {
     auto-optimise-store = false;
+    extra-substituters = ["https://cache.numtide.com"];
+    extra-trusted-public-keys = ["niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="];
   };
 
   nix.linux-builder.enable = false;

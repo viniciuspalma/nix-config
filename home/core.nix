@@ -77,7 +77,9 @@
     terramate
     opentofu
     awscli2
-    opencode
+    # AI coding agents (from numtide/llm-agents.nix)
+    llm-agents.opencode
+    llm-agents.codex
 
     # testing
     ddosify
