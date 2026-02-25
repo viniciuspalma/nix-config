@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+refresh_clients() {
+  tmux list-clients -F '#{client_tty}' 2>/dev/null | while read -r client_tty; do
+    if [ -n "${client_tty}" ]; then
+      tmux refresh-client -t "${client_tty}" >/dev/null 2>&1 || true
+    fi
+  done
+}
+
 dracula_script="$(tmux show-option -gv @system_theme_dracula_script 2>/dev/null || true)"
 rose_pine_script="$(tmux show-option -gv @system_theme_rose_pine_script 2>/dev/null || true)"
 
@@ -10,24 +18,40 @@ if [ -z "${dracula_script}" ] || [ -z "${rose_pine_script}" ]; then
 fi
 
 active_theme="$(tmux show-option -gv @system_theme_active 2>/dev/null || true)"
-system_style="$(
-  /usr/bin/defaults read -g AppleInterfaceStyle 2>/dev/null || true
+
+appearance_dark="$(
+  /usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to get dark mode' 2>/dev/null || true
 )"
 
-if [ "${system_style}" = "Dark" ]; then
+if [ -z "${appearance_dark}" ]; then
+  fallback_style="$(
+    /usr/bin/defaults read -g AppleInterfaceStyle 2>/dev/null || true
+  )"
+  if [ "${fallback_style}" = "Dark" ]; then
+    appearance_dark="true"
+  else
+    appearance_dark="false"
+  fi
+fi
+
+if [ "${appearance_dark}" = "true" ]; then
   if [ "${active_theme}" = "dracula" ]; then
+    refresh_clients
     exit 0
   fi
 
   tmux run-shell "${dracula_script}"
   tmux set-option -gq @system_theme_active "dracula"
+  refresh_clients
   exit 0
 fi
 
 if [ "${active_theme}" = "rose-pine-dawn" ]; then
+  refresh_clients
   exit 0
 fi
 
 tmux set-option -gq @rose_pine_variant "dawn"
 tmux run-shell "${rose_pine_script}"
 tmux set-option -gq @system_theme_active "rose-pine-dawn"
+refresh_clients

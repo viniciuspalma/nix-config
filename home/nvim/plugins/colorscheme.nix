@@ -13,6 +13,15 @@
           return nil
         end
 
+        local dark_mode = vim.fn.system("/usr/bin/osascript -e 'tell application \"System Events\" to tell appearance preferences to get dark mode' 2>/dev/null")
+        dark_mode = vim.trim(dark_mode)
+        if dark_mode == "true" then
+          return "dark"
+        end
+        if dark_mode == "false" then
+          return "light"
+        end
+
         local style = vim.fn.system("/usr/bin/defaults read -g AppleInterfaceStyle 2>/dev/null")
         if style:match("Dark") then
           return "dark"
