@@ -80,6 +80,7 @@
     # AI coding agents (from numtide/llm-agents.nix)
     llm-agents.opencode
     llm-agents.codex
+    postgresql_18
 
     # testing
     ddosify

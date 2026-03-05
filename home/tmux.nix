@@ -41,10 +41,14 @@
       # Match macOS appearance:
       # - light: Rose Pine Dawn
       # - dark: Dracula
+      # Dracula defaults include network/weather segments that can show
+      # local IP info or 'Weather Unavailable'. Keep only battery on the right.
+      set -g @dracula-plugins "battery"
       set -g @system_theme_dracula_script "${pkgs.tmuxPlugins.dracula}/share/tmux-plugins/dracula/dracula.tmux"
       set -g @system_theme_rose_pine_script "${pkgs.tmuxPlugins.rose-pine}/share/tmux-plugins/rose-pine/rose-pine.tmux"
       run-shell "~/.config/nix-config/scripts/tmux-apply-theme"
       set-hook -g client-attached "run-shell '~/.config/nix-config/scripts/tmux-apply-theme'"
+      set-hook -g client-focus-in "run-shell '~/.config/nix-config/scripts/tmux-apply-theme'"
       set-hook -g client-session-changed "run-shell '~/.config/nix-config/scripts/tmux-apply-theme'"
 
       # auto window rename

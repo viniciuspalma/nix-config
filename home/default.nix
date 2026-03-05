@@ -5,6 +5,7 @@
     ./shell.nix
     ./starship.nix
     ./tmux.nix
+    ./opencode.nix
     ./nvim
   ];
 in {
@@ -30,9 +31,6 @@ in {
       source = ./zsh-custom;
     };
 
-    file.".testcontainers.properties" = {
-      source = ./.testcontainers.properties;
-    };
   };
 
   # Let Home Manager install and manage itself.

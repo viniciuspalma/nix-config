@@ -37,7 +37,7 @@
         lua_ls.enable = true;
         texlab.enable = true;
         gopls.enable = true;
-        volar.enable = true;
+        vue_ls.enable = true;
         ts_ls.enable = true;
         biome.enable = true;
         eslint.enable = true;
