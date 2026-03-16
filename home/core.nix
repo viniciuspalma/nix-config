@@ -74,6 +74,7 @@
     teller
     supabase-cli
     gotrue-supabase
+    stripe-cli
     terramate
     opentofu
     awscli2
