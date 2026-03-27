@@ -5,6 +5,6 @@
     ../../home/ghostty.nix
     ../../home/kitty.nix
     ../../home/vscode.nix
-    # ../../home/zed.nix
+    ../../home/zed.nix
   ];
 }

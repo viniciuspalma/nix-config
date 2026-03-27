@@ -43,6 +43,7 @@
     mkcert # A simple tool to make locally-trusted development certificates
     lazygit # A simple terminal UI for git commands
     just # A command runner similar to make with an emphasis on usability
+    foundry # Is a command-line tool for interacting with Ethereum networks
 
     # languages
     go

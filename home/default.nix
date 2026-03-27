@@ -1,5 +1,6 @@
 {username, ...}: let
   sharedImports = [
+    ./colima.nix
     ./git.nix
     ./go.nix
     ./shell.nix

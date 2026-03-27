@@ -89,6 +89,7 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
+            backupFileExtension = "hm-backup";
             extraSpecialArgs = darwinSpecialArgs;
             users.${username} = {...}: {
               imports = mkHomeModules darwinHost;
