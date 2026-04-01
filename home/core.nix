@@ -1,4 +1,14 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  # Keep Ethereum Foundry's `forge` and expose Numtide Forge as `forge-agent`.
+  forge-agent = pkgs.symlinkJoin {
+    name = "forge-agent";
+    paths = [pkgs.llm-agents.forge];
+    postBuild = ''
+      rm "$out/bin/forge"
+      ln -s ${pkgs.llm-agents.forge}/bin/forge "$out/bin/forge-agent"
+    '';
+  };
+in {
   home.packages = with pkgs; [
     nnn # terminal file manager
 
@@ -79,9 +89,12 @@
     terramate
     opentofu
     awscli2
+
     # AI coding agents (from numtide/llm-agents.nix)
     llm-agents.opencode
     llm-agents.codex
+    forge-agent
+
     postgresql_18
 
     # testing

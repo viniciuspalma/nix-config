@@ -11,8 +11,8 @@
 
     clock24 = true;
 
-    # Allows for faster key repetition
-    escapeTime = 50;
+    # Zero escape time recommended by neovim health check
+    escapeTime = 0;
 
     keyMode = "vi";
     # Dvorak pane navigation and resizing is configured manually in extraConfig
@@ -23,7 +23,7 @@
       yank
     ];
 
-    terminal = "screen-256color";
+    terminal = "tmux-256color";
 
     extraConfig = ''
       # Enable mouse
@@ -52,13 +52,16 @@
       set-hook -g client-session-changed "run-shell '~/.config/nix-config/scripts/tmux-apply-theme'"
 
       # auto window rename
-      set -g automatic-rename
+      set -g automatic-rename on
       set -g automatic-rename-format '#{?#{==:#{pane_current_command},zsh},#{b:pane_current_path},#{pane_current_command}}'
 
-      # Start windows and panes at 1, not 0
+      # Start windows and panes at 1, not 0; renumber on close
       set -g base-index 1
       set -g pane-base-index 1
-      set-window-option -g pane-base-index 1
+      set -g renumber-windows on
+
+      # Increase scrollback buffer
+      set -g history-limit 50000
 
       # Set new panes to open in current directory
       bind c new-window -c "#{pane_current_path}"
@@ -77,7 +80,7 @@
       bind -r N resize-pane -U 5
       bind -r L resize-pane -R 5
 
-      bind-key -r f run-shell "tmux neww ~/.config/nix-config/scripts/tmux-sessionizer"
+      bind-key f run-shell "tmux neww ~/.config/nix-config/scripts/tmux-sessionizer"
     '';
   };
 

@@ -3,7 +3,9 @@
   config,
   pkgs,
   ...
-}: {
+}: let
+  forgeBin = "${pkgs.llm-agents.forge}/bin/forge";
+in {
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -29,52 +31,10 @@
       ];
     };
 
-    initExtra = ''
-      _opencode_detect_appearance() {
-        local mode
-        mode="$(/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to get dark mode' 2>/dev/null)"
-        if [[ "$mode" == "true" ]]; then
-          printf 'dark'
-          return 0
-        fi
-        if [[ "$mode" == "false" ]]; then
-          printf 'light'
-          return 0
-        fi
-
-        local fallback
-        fallback="$(/usr/bin/defaults read -g AppleInterfaceStyle 2>/dev/null)"
-        if [[ "$fallback" == "Dark" ]]; then
-          printf 'dark'
-        else
-          printf 'light'
-        fi
-      }
-
-      _opencode_theme_change_notice() {
-        local state_dir="$HOME/.local/state/opencode"
-        local state_file="$state_dir/appearance-mode"
-        local current previous
-
-        current="$(_opencode_detect_appearance)"
-
-        if [[ ! -f "$state_file" ]]; then
-          mkdir -p "$state_dir"
-          printf '%s' "$current" > "$state_file"
-          return 0
-        fi
-
-        previous="$(<"$state_file")"
-        if [[ "$current" != "$previous" ]]; then
-          printf '%s' "$current" > "$state_file"
-          if command -v pgrep >/dev/null 2>&1 && pgrep -x opencode >/dev/null 2>&1; then
-            print -P "%F{214}[opencode]%f macOS appearance switched to %B$current%b; restart OpenCode to refresh theme."
-          fi
-        fi
-      }
-
-      autoload -Uz add-zsh-hook
-      add-zsh-hook precmd _opencode_theme_change_notice
+    initContent = ''
+      export FORGE_BIN="${forgeBin}"
+      eval "$("$FORGE_BIN" zsh plugin | ${pkgs.gnused}/bin/sed 's/compdef _forge forge$/compdef _forge forge-agent/')"
+      eval "$("$FORGE_BIN" zsh theme)"
     '';
   };
 
@@ -84,24 +44,9 @@
     nix-direnv.enable = true;
   };
 
-  # Blade users currently log in with bash. Ensure `cd` triggers direnv there too.
-  home.activation.direnvBashHook = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    set -euo pipefail
-
-    bashrc="$HOME/.bashrc"
-    hook='eval "$(${pkgs.direnv}/bin/direnv hook bash)"'
-
-    if [ ! -f "$bashrc" ]; then
-      ${pkgs.coreutils}/bin/touch "$bashrc"
-    fi
-
-    if ! ${pkgs.gnugrep}/bin/grep -Fqx "$hook" "$bashrc"; then
-      printf '\n# Added by Home Manager for direnv\n%s\n' "$hook" >> "$bashrc"
-    fi
-  '';
-
   home.sessionVariables =
     {
+      FORGE_BIN = forgeBin;
       USE_GKE_GCLOUD_AUTH_PLUGIN = "True";
     }
     // lib.optionalAttrs pkgs.stdenv.isDarwin {

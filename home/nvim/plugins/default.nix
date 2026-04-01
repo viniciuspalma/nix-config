@@ -38,12 +38,12 @@
         };
       };
       nvim-autopairs.enable = true;
+
       colorizer = {
         enable = true;
         settings.user_default_options.names = false;
       };
 
-      copilot-vim.enable = true;
       luasnip.enable = true;
     };
   };
