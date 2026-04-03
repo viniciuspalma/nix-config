@@ -1,13 +1,21 @@
-{pkgs, ...}: let
-  # Keep Ethereum Foundry's `forge` and expose Numtide Forge as `forge-agent`.
-  forge-agent = pkgs.symlinkJoin {
-    name = "forge-agent";
-    paths = [pkgs.llm-agents.forge];
-    postBuild = ''
-      rm "$out/bin/forge"
-      ln -s ${pkgs.llm-agents.forge}/bin/forge "$out/bin/forge-agent"
-    '';
-  };
+{
+  pkgs,
+  config,
+  ...
+}: let
+  forgeBootstrapBin = "${pkgs.llm-agents.forge}/bin/forge";
+  userForgeBin = "${config.home.homeDirectory}/.local/bin/forge";
+
+  # Keep Ethereum Foundry's `forge` and expose Antinomy Forge as `forge-agent`.
+  # The Nix package is a bootstrap binary, so prefer the user-installed CLI once
+  # it has been placed in ~/.local/bin.
+  forge-agent = pkgs.writeShellScriptBin "forge-agent" ''
+    if [ -x "${userForgeBin}" ]; then
+      exec "${userForgeBin}" "$@"
+    fi
+
+    exec "${forgeBootstrapBin}" "$@"
+  '';
 in {
   home.packages = with pkgs; [
     nnn # terminal file manager
@@ -20,6 +28,7 @@ in {
 
     # utils
     ripgrep # recursively searches directories for a regex pattern
+    fd # Simple, fast and user-friendly alternative to find
     jq # A lightweight and flexible command-line JSON processor
     yq-go # yaml processer https://github.com/mikefarah/yq
     fzf # A command-line fuzzy finder
@@ -41,6 +50,7 @@ in {
 
     # misc
     cowsay # Configurable talking cow
+    bat # A cat clone with syntax highlighting and Git integration
     file # A utility to determine file types
     which # A utility to show the full path of commands
     tree # A utility to display a tree view of directories
