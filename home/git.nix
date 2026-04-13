@@ -31,6 +31,7 @@
       ".direnv"
       ".envrc"
       ".nix-bin"
+      ".codex"
     ];
 
     # signing = {

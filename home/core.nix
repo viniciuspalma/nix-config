@@ -42,6 +42,7 @@ in {
     glm # OpenGL Mathematics (GLM)
     giflib # A library for reading and writing gif images
     libpng # A collection of routines used to create PNG format graphics files
+    libicns # Provides the `png2icns` and `icns2png` Apple icon tools
     boost # Free peer-reviewed portable C++ source libraries
     glew # The OpenGL Extension Wrangler Library
     freetype # A software library to render fonts

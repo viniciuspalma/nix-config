@@ -6,6 +6,8 @@
 }: let
   cfg = config.programs.colima;
   yamlFormat = pkgs.formats.yaml {};
+  colimaConfig = yamlFormat.generate "colima-${cfg.profile}.yaml" cfg.settings;
+  colimaConfigTarget = "${config.home.homeDirectory}/.colima/${cfg.profile}/colima.yaml";
 in {
   options.programs.colima = {
     enable = lib.mkEnableOption "Colima";
@@ -58,8 +60,19 @@ in {
         DOCKER_HOST = "unix://${config.home.homeDirectory}/.colima/${cfg.profile}/docker.sock";
       };
 
-      home.file.".colima/${cfg.profile}/colima.yaml".source =
-        yamlFormat.generate "colima-${cfg.profile}.yaml" cfg.settings;
+      # Colima rewrites its profile config during startup, so this needs to be a
+      # regular file in $HOME instead of a read-only symlink into the Nix store.
+      home.activation.colimaConfig = lib.hm.dag.entryAfter ["linkGeneration"] ''
+        target="${colimaConfigTarget}"
+        source="${colimaConfig}"
+
+        $DRY_RUN_CMD mkdir -p "$(dirname "$target")"
+        if [ ! -e "$target" ] || [ -L "$target" ] || ! cmp -s "$source" "$target"; then
+          $DRY_RUN_CMD rm -f "$target"
+          $DRY_RUN_CMD cp "$source" "$target"
+          $DRY_RUN_CMD chmod 0644 "$target"
+        fi
+      '';
     })
   ];
 }
