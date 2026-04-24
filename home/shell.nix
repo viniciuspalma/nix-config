@@ -51,6 +51,15 @@ in {
     enable = true;
     enableZshIntegration = true;
     nix-direnv.enable = true;
+    config = {
+      whitelist = {
+        prefix = [
+          "${config.home.homeDirectory}/.codex/worktrees"
+          "${config.home.homeDirectory}/Developer"
+          "${config.home.homeDirectory}/Personal"
+        ];
+      };
+    };
   };
 
   home.sessionVariables =

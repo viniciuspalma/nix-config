@@ -104,6 +104,7 @@ in {
     # AI coding agents (from numtide/llm-agents.nix)
     llm-agents.opencode
     llm-agents.codex
+    llm-agents.claude-code
     forge-agent
 
     postgresql_18
