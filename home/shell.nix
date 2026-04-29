@@ -42,8 +42,10 @@ in {
         export FORGE_BIN="${forgeBootstrapBin}"
       fi
 
-      eval "$("$FORGE_BIN" zsh plugin | ${pkgs.gnused}/bin/sed 's/compdef _forge forge$/compdef _forge forge-agent/')"
-      eval "$("$FORGE_BIN" zsh theme)"
+      if [[ -t 1 ]]; then
+        eval "$("$FORGE_BIN" zsh plugin | ${pkgs.gnused}/bin/sed 's/compdef _forge forge$/compdef _forge forge-agent/')"
+        eval "$("$FORGE_BIN" zsh theme)"
+      fi
     '';
   };
 
