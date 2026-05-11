@@ -49,6 +49,11 @@ in {
     '';
   };
 
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   programs.direnv = {
     enable = true;
     enableZshIntegration = true;
