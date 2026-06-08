@@ -65,6 +65,7 @@ in {
     lazygit # A simple terminal UI for git commands
     just # A command runner similar to make with an emphasis on usability
     foundry # Is a command-line tool for interacting with Ethereum networks
+    gnupg #  GnuPG allows to encrypt and sign your data and communication
 
     # languages
     go

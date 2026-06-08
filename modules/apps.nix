@@ -49,7 +49,7 @@
     # `brew install --cask`
     # TODO Feel free to add your favorite apps here.
     casks = [
-      "ollama"
+      "ollama-app"
       "google-chrome"
       "zen"
       "1password"

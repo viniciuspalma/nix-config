@@ -35,10 +35,10 @@
       ".codex"
     ];
 
-    # signing = {
-    #   key = "xxx";
-    #   signByDefault = true;
-    # };
+    signing = {
+      key = "C572BAB2A35C7EEF";
+      signByDefault = true;
+    };
 
     settings = {
       user = {

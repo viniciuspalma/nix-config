@@ -2,6 +2,7 @@
   sharedImports = [
     ./colima.nix
     ./git.nix
+    ./gpg.nix
     ./go.nix
     ./shell.nix
     ./starship.nix
@@ -17,6 +18,9 @@ in {
   home = {
     username = username;
     # homeDirectory = "/Users/${username}";
+    # This config intentionally tracks nixpkgs-unstable, whose release metadata
+    # can move ahead of Home Manager's release metadata.
+    enableNixpkgsReleaseCheck = false;
 
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage

@@ -1,4 +1,7 @@
 {
+  nixpkgs,
+  ...
+}: {
   imports = [
     # ./autocommands.nix
     # ./completion.nix
@@ -12,8 +15,10 @@
     enable = true;
     viAlias = true;
     vimAlias = true;
+    version.enableNixpkgsReleaseCheck = false;
 
     nixpkgs = {
+      source = nixpkgs;
       config = {
         allowUnfree = true;
       };
@@ -31,6 +36,7 @@
       incsearch = true;
       backup = false;
       wrap = false;
+      termguicolors = true;
     };
   };
 

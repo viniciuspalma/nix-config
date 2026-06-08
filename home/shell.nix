@@ -19,10 +19,18 @@ in {
       enable = true;
     };
 
+    history = {
+      append = true;
+      extended = true;
+      save = 50000;
+      share = true;
+      size = 50000;
+    };
+
     oh-my-zsh = {
       enable = true;
 
-      custom = "$HOME/zsh-custom";
+      custom = "${config.home.homeDirectory}/zsh-custom";
       theme = "dracula-pro";
 
       plugins = [
