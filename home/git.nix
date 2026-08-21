@@ -42,7 +42,8 @@
 
     settings = {
       user = {
-        name = username;
+        # Personal identity is the safe default outside the work checkout.
+        name = "viniciuspalma";
         email = useremail;
       };
       alias = {
@@ -64,8 +65,18 @@
       init.defaultBranch = "main";
       push.autoSetupRemote = true;
       pull.rebase = true;
-      url."git@github.com:code-visionary".insteadOf = "https://github.com/code-visionary";
-      url."git@github.com:chocoapp".insteadOf = "https://github.com/chocoapp";
+      # The longest match wins: the work organization takes its dedicated
+      # identity before the personal default catches all other GitHub URLs.
+      url."git@github-work:chocoapp/".insteadOf = [
+        "git@github.com:chocoapp/"
+        "ssh://git@github.com/chocoapp/"
+        "https://github.com/chocoapp/"
+      ];
+      url."git@github-personal:".insteadOf = [
+        "git@github.com:"
+        "ssh://git@github.com/"
+        "https://github.com/"
+      ];
     };
   };
 
