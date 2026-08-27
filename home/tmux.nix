@@ -31,7 +31,7 @@
 
       # For neovim
       set -g focus-events on
-      set -as terminal-features ",xterm-256color:RGB,screen-256color:RGB,tmux-256color:RGB"
+      set -as terminal-features ",xterm-ghostty:hyperlinks,xterm-256color:RGB,screen-256color:RGB,tmux-256color:RGB"
 
       # Update the status line every seconds
       set -g status-interval 1

@@ -3,7 +3,7 @@
   config,
   ...
 }: let
-  forgeBootstrapBin = "${pkgs.llm-agents.forge}/bin/forge";
+  forgeBootstrapBin = "${pkgs.llm-agents.forgecode}/bin/forge";
   userForgeBin = "${config.home.homeDirectory}/.local/bin/forge";
 
   # Keep Ethereum Foundry's `forge` and expose Antinomy Forge as `forge-agent`.

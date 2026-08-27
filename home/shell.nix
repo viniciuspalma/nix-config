@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  forgeBootstrapBin = "${pkgs.llm-agents.forge}/bin/forge";
+  forgeBootstrapBin = "${pkgs.llm-agents.forgecode}/bin/forge";
   userForgeBin = "${config.home.homeDirectory}/.local/bin/forge";
 in {
   programs.zsh = {

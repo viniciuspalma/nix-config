@@ -12,6 +12,22 @@
     rm -f ~/.gitconfig
   '';
 
+  # Per-directory identity overrides: ~/Developer uses the choco work
+  # account, ~/Personal uses the personal account. SSH & GPG keys are shared
+  # across both, so only user.name/email differ.
+  home.file.".config/git/developer.gitconfig".text = ''
+    [user]
+      name = chocoastronaut
+      email = vinicius.palma@choco.com
+      signingkey = 6ADE740B4972CC2D
+  '';
+
+  home.file.".config/git/personal.gitconfig".text = ''
+    [user]
+      name = viniciuspalma
+      email = pockvini@gmail.com
+  '';
+
   programs.git = {
     enable = true;
     lfs.enable = true;
@@ -19,9 +35,12 @@
 
     includes = [
       {
-        # use diffrent email & name for work
-        path = "~/work/.gitconfig";
-        condition = "gitdir:~/work/";
+        path = "~/.config/git/developer.gitconfig";
+        condition = "gitdir:~/Developer/";
+      }
+      {
+        path = "~/.config/git/personal.gitconfig";
+        condition = "gitdir:~/Personal/";
       }
     ];
 
@@ -33,6 +52,7 @@
       ".envrc"
       ".nix-bin"
       ".codex"
+      "worktrees"
     ];
 
     signing = {

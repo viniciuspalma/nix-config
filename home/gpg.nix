@@ -29,32 +29,48 @@
       $DRY_RUN_CMD ${pkgs.gnupg}/bin/gpgconf --kill gpg-agent || true
     '';
 
-  # `gpg_cache`: load the signing key's passphrase from 1Password into
+  # `gpg_cache`: load the signing keys' passphrase from 1Password into
   # gpg-agent so commit signing never prompts. The passphrase then lives in the
   # agent for max-cache-ttl (24h above), shared across every terminal.
   #
-  # It only calls 1Password when the key is NOT already cached, so running it on
-  # every interactive shell startup is an instant no-op once primed — 1Password
-  # is only hit after a reboot, an agent restart, or once the 24h TTL lapses.
+  # Both the personal and choco signing keys were created with the same
+  # passphrase, stored once in 1Password, so a single fetch primes both
+  # keygrips.
   #
-  # NOTE: GPG_KEYGRIP / OP_ITEM below are this machine's values. Re-derive the
-  # keygrip with `gpg --list-secret-keys --with-keygrip` if the key changes.
+  # It only calls 1Password when at least one key is NOT already cached, so
+  # running it on every interactive shell startup is an instant no-op once
+  # primed — 1Password is only hit after a reboot, an agent restart, or once
+  # the 24h TTL lapses.
+  #
+  # NOTE: GPG_KEYGRIPS / OP_ITEM below are this machine's values. Re-derive a
+  # keygrip with `gpg --list-secret-keys --with-keygrip` if a key changes.
   programs.zsh.initContent = lib.mkAfter ''
     gpg_cache() {
-      local GPG_KEYGRIP=ACB12F423A6647EC65BDA93DA8CBE4932739306C
       local OP_ITEM=dlasat2miytjixyya3xsglghxa
+      local GPG_KEYGRIPS=(
+        ACB12F423A6647EC65BDA93DA8CBE4932739306C # personal - pockvini@gmail.com
+        651D45AAE00B88ABB6220CF5C11346E68EA4B9B6 # choco - vinicius.palma@choco.com
+      )
 
       command -v op >/dev/null 2>&1 || return 0
       gpgconf --launch gpg-agent 2>/dev/null
 
       # Already cached? KEYINFO field 7 is "1" when the passphrase is held.
-      if gpg-connect-agent "keyinfo $GPG_KEYGRIP" /bye 2>/dev/null \
-           | awk '$1=="S" && $2=="KEYINFO" && $7=="1" {hit=1} END {exit hit?0:1}'; then
-        return 0
-      fi
+      local grip needs_preset=()
+      for grip in "''${GPG_KEYGRIPS[@]}"; do
+        if ! gpg-connect-agent "keyinfo $grip" /bye 2>/dev/null \
+             | awk '$1=="S" && $2=="KEYINFO" && $7=="1" {hit=1} END {exit hit?0:1}'; then
+          needs_preset+=("$grip")
+        fi
+      done
+      [[ ''${#needs_preset[@]} -eq 0 ]] && return 0
 
-      op item get "$OP_ITEM" --reveal --fields label=password \
-        | "$(gpgconf --list-dirs libexecdir)/gpg-preset-passphrase" --preset "$GPG_KEYGRIP"
+      local passphrase
+      passphrase=$(op item get "$OP_ITEM" --reveal --fields label=password)
+      for grip in "''${needs_preset[@]}"; do
+        printf '%s' "$passphrase" \
+          | "$(gpgconf --list-dirs libexecdir)/gpg-preset-passphrase" --preset "$grip"
+      done
     }
 
     # Prime on interactive shell startup. Instant when already cached; only the
