@@ -26,15 +26,10 @@
     enable = true;
 
     onActivation = {
-      # autoUpdate = true;
+      autoUpdate = true;
       # 'zap': uninstalls all formulae(and related files) not listed here.
       cleanup = "zap";
     };
-
-    taps = [
-      "cfergeau/crc"
-      "withgraphite/tap"
-    ];
 
     # `brew install`
     # TODO Feel free to add your favorite apps here.
@@ -43,8 +38,13 @@
       "sui"
       "leapp-cli"
       "pgweb" #
-      "graphite" # withgraphite/tap/graphite CLI
     ];
+
+    # Homebrew 6 requires explicit trust for formulae from third-party taps.
+    extraConfig = ''
+      tap "withgraphite/tap", trusted: { formula: "graphite" }
+      brew "graphite"
+    '';
 
     # `brew install --cask`
     # TODO Feel free to add your favorite apps here.
