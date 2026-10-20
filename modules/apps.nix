@@ -27,8 +27,9 @@
 
     onActivation = {
       autoUpdate = true;
-      # 'zap': uninstalls all formulae(and related files) not listed here.
-      cleanup = "zap";
+      # Use supported Homebrew flags to remove unlisted packages and zap cask files.
+      cleanup = "none";
+      extraFlags = [ "--force-cleanup" "--zap" ];
     };
 
     # `brew install`
@@ -44,12 +45,19 @@
     extraConfig = ''
       tap "withgraphite/tap", trusted: { formula: "graphite" }
       brew "graphite"
+
+      # vLLM with the Metal backend for Apple Silicon (repo is not named homebrew-*, so needs the URL)
+      tap "vllm-project/vllm-metal", "https://github.com/vllm-project/vllm-metal", trusted: { formula: "vllm-metal" }
+      brew "vllm-metal"
+
+      # Rive CLI: build and preview .riv files from the terminal (the "rive" cask is only the editor)
+      tap "rive-app/tap", trusted: { cask: "rive-cli" }
+      cask "rive-cli"
     '';
 
     # `brew install --cask`
     # TODO Feel free to add your favorite apps here.
     casks = [
-      "ollama-app"
       "google-chrome"
       "zen"
       "1password"
@@ -73,6 +81,7 @@
       "leapp" # Cloud with aws
       "notion" # Note-taking and organization
       "figma" # Design tool
+      "rive" # Interactive animation design tool
       "dbeaver-community" # Database management too
       "proxyman" # HTTP Debugging Proxy
       "ghostty" # GPU-accelerated terminal emulator

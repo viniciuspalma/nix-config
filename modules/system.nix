@@ -142,6 +142,15 @@
       remapCapsLockToControl = true; # remap caps lock to control, useful for emac users
       remapCapsLockToEscape = false; # remap caps lock to escape, useful for vim users
 
+      # complete the swap: left control -> caps lock
+      # (caps lock -> control comes from remapCapsLockToControl above)
+      userKeyMapping = [
+        {
+          HIDKeyboardModifierMappingSrc = 30064771296; # 0x7000000E0 left control
+          HIDKeyboardModifierMappingDst = 30064771129; # 0x700000039 caps lock
+        }
+      ];
+
       # swap left command and left alt
       # so it matches common keyboard layout: `ctrl | command | alt`
       #

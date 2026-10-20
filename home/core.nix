@@ -3,6 +3,26 @@
   config,
   ...
 }: let
+  # The source-built package lacks the layout needed to seed Codex's daemon.
+  # Copy files: its package validator rejects links outside the package root.
+  codexPackaged =
+    pkgs.runCommand "codex-${pkgs.llm-agents.codex.version}-packaged" {
+      inherit (pkgs.llm-agents.codex) version meta;
+    } ''
+      mkdir -p "$out"
+      cp -RL ${pkgs.llm-agents.codex}/. "$out/"
+      chmod -R u+w "$out"
+      mkdir -p "$out/codex-path"
+      cp ${pkgs.ripgrep}/bin/rg "$out/codex-path/rg"
+      cat > "$out/codex-package.json" <<'EOF'
+      ${builtins.toJSON {
+        version = pkgs.llm-agents.codex.version;
+        target = pkgs.stdenv.hostPlatform.rust.rustcTarget;
+        entrypoint = "bin/codex";
+      }}
+      EOF
+    '';
+
   forgeBootstrapBin = "${pkgs.llm-agents.forgecode}/bin/forge";
   userForgeBin = "${config.home.homeDirectory}/.local/bin/forge";
 
@@ -101,10 +121,11 @@ in {
     terramate
     opentofu
     awscli2
+    sentry-cli
 
     # AI coding agents (from numtide/llm-agents.nix)
     llm-agents.opencode
-    llm-agents.codex
+    codexPackaged
     llm-agents.claude-code
     forge-agent
 
